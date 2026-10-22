@@ -85,6 +85,9 @@
                 <p id="current-date-label" class="text-xs text-slate-400"></p>
             </div>
             <div class="flex items-center gap-2">
+                <button onclick="shareViaWhatsApp()" title="Share via WhatsApp" class="w-9 h-9 bg-emerald-600/20 border border-emerald-500/30 rounded-xl flex items-center justify-center text-emerald-400 hover:bg-emerald-600/30 transition">
+                    <i data-lucide="message-circle" class="w-4 h-4"></i>
+                </button>
                 <button onclick="openSettingsModal()" class="w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center text-slate-300 hover:text-white transition">
                     <i data-lucide="settings" class="w-4 h-4"></i>
                 </button>
@@ -133,6 +136,14 @@
                     <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl">
                         <span class="text-[10px] font-semibold text-slate-400 uppercase block mb-1">Spent So Far</span>
                         <span id="stat-spent" class="text-sm font-bold text-indigo-400">€0</span>
+                    </div>
+                </div>
+
+                <!-- Category Visual Breakdown -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300">Category Breakdown (This Month)</h3>
+                    <div id="category-breakdown-list" class="space-y-2 text-xs">
+                        <div class="text-slate-500 text-center py-2">No variable expenses logged yet.</div>
                     </div>
                 </div>
 
@@ -222,9 +233,16 @@
     <div id="settings-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm p-5 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center">
-                <h3 class="text-sm font-bold text-white uppercase tracking-wider">Budget Settings</h3>
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider">Account & Settings</h3>
                 <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
+            
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-1 text-xs">
+                <div class="text-slate-400 uppercase text-[9px] font-bold">Active Account</div>
+                <div id="settings-user-email" class="text-white font-medium truncate">-</div>
+                <div class="text-slate-500 text-[10px]">Timezone: <span id="settings-timezone" class="text-indigo-400"></span></div>
+            </div>
+
             <form id="settings-form" class="space-y-3">
                 <div>
                     <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Monthly Pool (€)</label>
@@ -244,25 +262,23 @@
         const SUPABASE_URL = "https://gpyuydyqayyeeyzkersk.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdweXV5ZHlxYXl5ZWV5emtlcnNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MzA1MjUsImV4cCI6MjEwODIwNjUyNX0.kwNEXP-Jo5dZeVL_iNdG12LWxpFQmHtN1eVim7Jn3ak";
 
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+        });
 
         let currentUser = null;
         let userSettings = { monthly_budget: 992, fixed_costs: 450 };
         let transactions = [];
+        let currentDailyLimit = 0;
 
         window.addEventListener('DOMContentLoaded', async () => {
             lucide.createIcons();
             setupAuthListeners();
-            
-            const hour = new Date().getHours();
-            let greeting = "Good evening 🌙";
-            if (hour < 12) {
-                greeting = "Good morning 🌅";
-            } else if (hour < 18) {
-                greeting = "Good afternoon ☀️";
-            }
-            document.getElementById('greeting-label').innerText = greeting;
 
+            // Set Timezone in Settings
+            document.getElementById('settings-timezone').innerText = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+            // Check active session (Persistent login check)
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 currentUser = session.user;
@@ -283,6 +299,21 @@
         function showApp() {
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('app-wrapper').classList.remove('hidden');
+            
+            // Set dynamic greeting with name derived from email
+            if (currentUser && currentUser.email) {
+                const namePart = currentUser.email.split('@')[0];
+                const capitalizedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+                
+                const hour = new Date().getHours();
+                let greeting = "Good evening 🌙";
+                if (hour < 12) greeting = "Good morning 🌅";
+                else if (hour < 18) greeting = "Good afternoon ☀️";
+
+                document.getElementById('greeting-label').innerText = `${greeting}, ${capitalizedName}!`;
+                document.getElementById('settings-user-email').innerText = currentUser.email;
+            }
+
             loadUserData();
         }
 
@@ -316,7 +347,11 @@
                     errorDiv.innerText = error.message;
                     errorDiv.classList.remove('hidden');
                 } else {
-                    alert('Signup successful! Check your email if confirmation is required, or sign in.');
+                    alert('Signup successful! You are now logged in.');
+                    if(data.user) {
+                        currentUser = data.user;
+                        showApp();
+                    }
                 }
             });
         }
@@ -417,19 +452,19 @@
             const remainingDays = lastDayOfMonth - now.getDate() + 1;
 
             const netAvailablePool = Number(userSettings.monthly_budget) - Number(userSettings.fixed_costs) - totalSpentThisMonth;
-            const dailyLimit = remainingDays > 0 ? Math.max(0, netAvailablePool / remainingDays) : 0;
+            currentDailyLimit = remainingDays > 0 ? Math.max(0, netAvailablePool / remainingDays) : 0;
 
-            document.getElementById('daily-limit-display').innerText = `€${dailyLimit.toFixed(2)}`;
+            document.getElementById('daily-limit-display').innerText = `€${currentDailyLimit.toFixed(2)}`;
             document.getElementById('spent-today-label').innerText = `Spent today: €${todaySpent.toFixed(2)}`;
             document.getElementById('days-remaining-label').innerText = `${remainingDays} days left`;
 
-            const progressPercent = dailyLimit > 0 ? Math.min(100, (todaySpent / (dailyLimit + todaySpent)) * 100) : 100;
+            const progressPercent = currentDailyLimit > 0 ? Math.min(100, (todaySpent / (currentDailyLimit + todaySpent)) * 100) : 100;
             const progressBar = document.getElementById('progress-bar');
             const safetyBadge = document.getElementById('safety-badge');
 
             progressBar.style.width = `${progressPercent}%`;
 
-            if (todaySpent > dailyLimit) {
+            if (todaySpent > currentDailyLimit) {
                 progressBar.className = "bg-rose-500 h-full rounded-full transition-all duration-500";
                 safetyBadge.className = "text-xs px-2.5 py-1 rounded-full font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20";
                 safetyBadge.innerText = "Over Limit";
@@ -443,7 +478,36 @@
                 safetyBadge.innerText = "Safe 🟢";
             }
 
+            renderCategoryBreakdown(monthTxs, totalSpentThisMonth);
             renderTransactionsLists();
+        }
+
+        function renderCategoryBreakdown(monthTxs, totalSpent) {
+            const container = document.getElementById('category-breakdown-list');
+            if (monthTxs.length === 0 || totalSpent === 0) {
+                container.innerHTML = `<div class="text-slate-500 text-center py-2">No variable expenses logged yet.</div>`;
+                return;
+            }
+
+            const categories = {};
+            monthTxs.forEach(t => {
+                categories[t.category] = (categories[t.category] || 0) + Number(t.amount);
+            });
+
+            container.innerHTML = Object.entries(categories).map(([cat, amt]) => {
+                const pct = Math.round((amt / totalSpent) * 100);
+                return `
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-slate-300">
+                            <span>${cat}</span>
+                            <span class="font-bold text-white">€${amt.toFixed(2)} (${pct}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden border border-slate-800">
+                            <div class="bg-indigo-500 h-full rounded-full" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function renderTransactionsLists() {
@@ -485,6 +549,12 @@
             `).join('');
 
             lucide.createIcons();
+        }
+
+        function shareViaWhatsApp() {
+            const text = `🇩🇪 *German Student Budget Status*\nToday's Daily Allowance Limit: €${currentDailyLimit.toFixed(2)}\nMonthly Pool: €${userSettings.monthly_budget} | Fixed Costs: €${userSettings.fixed_costs}\n_Tracked via PWA Budget App_`;
+            const encoded = encodeURIComponent(text);
+            window.open(`https://wa.me/?text=${encoded}`, '_blank');
         }
 
         function switchTab(tabId) {
