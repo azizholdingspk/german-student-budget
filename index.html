@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>€992 Germany Student Budget & Tax Suite</title>
+    <title>FinanzCampus 🇩🇪 Student Budget</title>
     
     <!-- PWA Meta Tags & App Icon -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -48,7 +48,7 @@
             <div class="bg-indigo-600 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-indigo-500/30 mb-4">
                 <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
             </div>
-            <h2 class="text-center text-2xl font-bold tracking-tight text-white">Germany Student Suite</h2>
+            <h2 class="text-center text-2xl font-bold tracking-tight text-white">FinanzCampus 🇩🇪</h2>
             <p class="text-center text-sm text-slate-400 mt-1">€992 Sperrkonto & Finanzamt Tax Tracker</p>
         </div>
 
@@ -123,6 +123,20 @@
                             <div id="progress-bar" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Semester & Visa Deadlines Widget -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-indigo-600/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400">
+                            <i data-lucide="calendar-clock" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-white block">German Deadlines</span>
+                            <span id="deadline-countdown" class="text-[10px] text-slate-400">Semesterbeitrag & Visa Check</span>
+                        </div>
+                    </div>
+                    <span id="deadline-badge" class="text-xs font-bold bg-indigo-500/10 text-indigo-400 px-2.5 py-1 rounded-lg border border-indigo-500/20">- Days</span>
                 </div>
 
                 <!-- Explicit Math Breakdown Widget -->
@@ -265,7 +279,6 @@
             </div>
             
             <form id="settings-form" class="space-y-3">
-                <!-- Profile Info Section -->
                 <div class="space-y-2 border-b border-slate-800 pb-3">
                     <span class="text-[10px] uppercase font-bold text-indigo-400">Student Profile</span>
                     <div class="grid grid-cols-2 gap-2">
@@ -290,11 +303,10 @@
                     </div>
                 </div>
 
-                <!-- Financial Budget Section -->
                 <div class="space-y-2">
                     <span class="text-[10px] uppercase font-bold text-indigo-400">Monthly Budget & Fixed Breakdown</span>
                     <div>
-                        <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Monthly Pool (€) [e.g. 992]</label>
+                        <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Monthly Pool (€)</label>
                         <input type="number" step="0.01" id="set-pool" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                     </div>
                     
@@ -304,14 +316,14 @@
                             <input type="number" step="0.01" id="set-rent" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Health Ins. (Krankenkasse) (€)</label>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Health Ins. (€)</label>
                             <input type="number" step="0.01" id="set-health" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">GEZ (Rundfunkbeitrag) (€)</label>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">GEZ (€)</label>
                             <input type="number" step="0.01" id="set-gez" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
                         </div>
                         <div>
@@ -360,6 +372,9 @@
             lucide.createIcons();
             setupAuthListeners();
 
+            // Calculate next upcoming Semesterbeitrag deadline (typically March 15 for summer or Sept 15 for winter)
+            calcDeadlineCountdown();
+
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 currentUser = session.user;
@@ -371,6 +386,20 @@
             const options = { weekday: 'short', month: 'short', day: 'numeric' };
             document.getElementById('current-date-label').innerText = new Date().toLocaleDateString('en-US', options) + ' • ' + Intl.DateTimeFormat().resolvedOptions().timeZone;
         });
+
+        function calcDeadlineCountdown() {
+            const now = new Date();
+            let targetYear = now.getFullYear();
+            // Winter semester deadline typically Sept 15, Summer semester March 15
+            let targetDate = new Date(targetYear, 8, 15); // Sep 15
+            if (now > targetDate) {
+                targetDate = new Date(targetYear + 1, 2, 15); // March 15 next year
+            }
+            const diffTime = targetDate - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            document.getElementById('deadline-countdown').innerText = `Semesterbeitrag Deadline`;
+            document.getElementById('deadline-badge').innerText = `${diffDays} days left`;
+        }
 
         function showAuth() {
             document.getElementById('auth-screen').classList.remove('hidden');
@@ -454,7 +483,6 @@
                 userSettings = settingsData;
             }
 
-            // Update Greeting with Name
             const displayName = userSettings.full_name ? userSettings.full_name : currentUser.email.split('@')[0];
             const capitalizedName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
             
@@ -549,7 +577,6 @@
             const netAvailablePool = variablePool - totalSpentThisMonth;
             currentDailyLimit = remainingDays > 0 ? Math.max(0, netAvailablePool / remainingDays) : 0;
 
-            // Math widget updates
             document.getElementById('math-pool').innerText = `€${pool.toFixed(2)}`;
             document.getElementById('math-fixed').innerText = `-€${totalFixed.toFixed(2)}`;
             document.getElementById('math-variable').innerText = `€${variablePool.toFixed(2)}`;
@@ -653,7 +680,7 @@
         }
 
         function shareViaWhatsApp() {
-            const text = `🇩🇪 *German Student Budget Status*\nName: ${userSettings.full_name || 'Student'}\nToday's Daily Allowance Limit: €${currentDailyLimit.toFixed(2)}\nMonthly Pool: €${userSettings.monthly_budget}\n_Tracked via PWA Budget App_`;
+            const text = `🇩🇪 *FinanzCampus Budget Status*\nName: ${userSettings.full_name || 'Student'}\nToday's Daily Allowance: €${currentDailyLimit.toFixed(2)}\nMonthly Pool: €${userSettings.monthly_budget}\n_Tracked via PWA Budget App_`;
             const encoded = encodeURIComponent(text);
             window.open(`https://wa.me/?text=${encoded}`, '_blank');
         }
@@ -729,7 +756,7 @@
             if (!error) {
                 userSettings = { ...userSettings, ...updatePayload };
                 closeSettingsModal();
-                loadUserData(); // Reload greeting and UI
+                loadUserData();
             }
         });
 
