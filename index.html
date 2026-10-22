@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>€992 Budget & Tax Tracker Germany</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f172a">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: { 850: '#0b1329', 900: '#0f172a', 950: '#020617' }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body {
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-top: env(safe-area-inset-top);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="h-full text-slate-100 flex flex-col font-sans select-none antialiased bg-slate-950">
+
+    <!-- AUTH SCREEN (Hidden when logged in) -->
+    <div id="auth-screen" class="fixed inset-0 z-50 bg-slate-950 flex flex-col justify-center px-6 py-12 hidden">
+        <div class="sm:mx-auto sm:w-full sm:max-w-md">
+            <div class="bg-indigo-600 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-indigo-500/30 mb-4">
+                <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
+            </div>
+            <h2 class="text-center text-2xl font-bold tracking-tight text-white">German Student Budget</h2>
+            <p class="text-center text-sm text-slate-400 mt-1">€992 Sperrkonto & Finanzamt Tax Tracker</p>
+        </div>
+
+        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+            <div class="bg-slate-900 py-8 px-6 shadow-2xl rounded-2xl border border-slate-800">
+                <form id="auth-form" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-1">Email Address</label>
+                        <input type="email" id="auth-email" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 uppercase tracking-wider mb-1">Password</label>
+                        <input type="password" id="auth-password" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div id="auth-error" class="text-rose-400 text-xs hidden"></div>
+                    <div class="pt-2 flex gap-3">
+                        <button type="submit" id="btn-login" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition shadow-lg shadow-indigo-600/20">Sign In</button>
+                        <button type="button" id="btn-signup" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-medium py-3 rounded-xl transition">Sign Up</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP WRAPPER -->
+    <div id="app-wrapper" class="flex-1 flex flex-col max-w-md w-full mx-auto relative overflow-hidden hidden">
+        
+        <!-- HEADER -->
+        <header class="px-5 py-4 flex items-center justify-between border-b border-slate-800/80 bg-slate-900/50 backdrop-blur-md sticky top-0 z-30">
+            <div>
+                <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-2">
+                    Germany Budget <span class="text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full border border-indigo-500/30">€992 Pool</span>
+                </h1>
+                <p id="current-date-label" class="text-xs text-slate-400"></p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button onclick="openSettingsModal()" class="w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center text-slate-300 hover:text-white transition">
+                    <i data-lucide="settings" class="w-4 h-4"></i>
+                </button>
+                <button onclick="handleLogout()" class="w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center text-rose-400 hover:bg-rose-500/10 transition">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN SCROLLABLE CONTENT -->
+        <main class="flex-1 overflow-y-auto pb-24 px-4 pt-4 space-y-4 no-scrollbar">
+
+            <!-- TAB 1: DASHBOARD -->
+            <section id="tab-dashboard" class="tab-content space-y-4">
+                <!-- Daily Allowance Hero Card -->
+                <div class="bg-gradient-to-br from-slate-900 to-slate-850 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-indigo-600/10 rounded-full blur-2xl pointer-events-none"></div>
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-xs font-semibold tracking-wider text-slate-400 uppercase">Today's Dynamic Allowance</span>
+                        <span id="safety-badge" class="text-xs px-2.5 py-1 rounded-full font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Safe</span>
+                    </div>
+                    <div class="flex items-baseline gap-2 mb-4">
+                        <h2 id="daily-limit-display" class="text-3xl font-extrabold tracking-tight text-white">€0.00</h2>
+                        <span class="text-xs text-slate-400">/ day + rollover</span>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between text-xs text-slate-400 font-medium">
+                            <span id="spent-today-label">Spent today: €0.00</span>
+                            <span id="days-remaining-label">0 days left</span>
+                        </div>
+                        <div class="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden p-0.5 border border-slate-800">
+                            <div id="progress-bar" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monthly Financial Health Breakdown -->
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl">
+                        <span class="text-[10px] font-semibold text-slate-400 uppercase block mb-1">Monthly Pool</span>
+                        <span id="stat-pool" class="text-sm font-bold text-white">€992</span>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl">
+                        <span class="text-[10px] font-semibold text-slate-400 uppercase block mb-1">Fixed Costs</span>
+                        <span id="stat-fixed" class="text-sm font-bold text-amber-400">€450</span>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl">
+                        <span class="text-[10px] font-semibold text-slate-400 uppercase block mb-1">Spent So Far</span>
+                        <span id="stat-spent" class="text-sm font-bold text-indigo-400">€0</span>
+                    </div>
+                </div>
+
+                <!-- Quick Expense Logging Form Card -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-1.5">
+                        <i data-lucide="plus-circle" class="w-4 h-4 text-indigo-400"></i> Log New Expense
+                    </h3>
+                    <form id="expense-form" class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Amount (€)</label>
+                                <input type="number" step="0.01" id="exp-amount" required placeholder="0.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Category</label>
+                                <select id="exp-category" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+                                    <option value="Food">🛒 Groceries / Food</option>
+                                    <option value="Transport">🚆 Transport / DB</option>
+                                    <option value="Study">📚 Study / Books</option>
+                                    <option value="Leisure">☕ Leisure / Cafe</option>
+                                    <option value="Other">💡 Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Description</label>
+                            <input type="text" id="exp-desc" required placeholder="e.g. Rewe, DB Navigator, Semesterbeitrag..." oninput="autoDetectTax(this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div class="flex items-center justify-between pt-1 bg-slate-950/50 p-2.5 rounded-xl border border-slate-800">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="landmark" class="w-4 h-4 text-indigo-400"></i>
+                                <span class="text-xs font-medium text-slate-300">Tax Deductible 🇩🇪</span>
+                            </div>
+                            <input type="checkbox" id="exp-tax" class="w-4 h-4 accent-indigo-600 rounded bg-slate-950 border-slate-800">
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition text-sm shadow-lg shadow-indigo-600/20">Add Expense</button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB 2: TRANSACTIONS HISTORY -->
+            <section id="tab-transactions" class="tab-content space-y-3 hidden">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Transaction History</h2>
+                    <span id="tx-count" class="text-xs text-slate-500 font-medium">0 items</span>
+                </div>
+                <div id="transactions-list" class="space-y-2">
+                    <!-- Dynamic Items -->
+                </div>
+            </section>
+
+            <!-- TAB 3: GERMAN TAX TRACKER (FINANZAMT) -->
+            <section id="tab-tax" class="tab-content space-y-4 hidden">
+                <div class="bg-gradient-to-br from-indigo-950/40 to-slate-900 border border-indigo-500/20 rounded-2xl p-4">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xl">🇩🇪</span>
+                        <h2 class="text-sm font-bold text-white">Finanzamt Tax Return</h2>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed mb-3">
+                        Track study-related expenses (<span class="text-indigo-400 font-medium">Werbungskosten / Sonderausgaben</span>) throughout the year. Build a tax loss carryforward (<span class="text-indigo-400 font-medium">Verlustvortrag</span>) for your future post-grad salary.
+                    </p>
+                    <button onclick="exportTaxCSV()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20">
+                        <i data-lucide="download" class="w-4 h-4"></i> Export Tax Deductions (.CSV)
+                    </button>
+                </div>
+                <div id="tax-transactions-list" class="space-y-2">
+                    <!-- Dynamic Tax Deductible Items -->
+                </div>
+            </section>
+
+        </main>
+
+        <!-- BOTTOM NAVIGATION BAR -->
+        <nav class="absolute bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-lg border-t border-slate-800/80 px-4 py-2 flex justify-around items-center z-30">
+            <button onclick="switchTab('dashboard')" class="nav-btn flex flex-col items-center gap-1 text-indigo-400 py-1 px-3 transition" data-target="tab-dashboard">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Dashboard</span>
+            </button>
+            <button onclick="switchTab('transactions')" class="nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 py-1 px-3 transition" data-target="tab-transactions">
+                <i data-lucide="receipt" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Expenses</span>
+            </button>
+            <button onclick="switchTab('tax')" class="nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 py-1 px-3 transition" data-target="tab-tax">
+                <i data-lucide="landmark" class="w-5 h-5"></i>
+                <span class="text-[10px] font-medium">Tax 🇩🇪</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settings-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-sm p-5 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider">Budget Settings</h3>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form id="settings-form" class="space-y-3">
+                <div>
+                    <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Monthly Pool (€)</label>
+                    <input type="number" id="set-pool" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Fixed Costs (Rent, Health Ins., etc.) (€)</label>
+                    <input type="number" id="set-fixed" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition text-xs shadow-lg shadow-indigo-600/20">Save Settings</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- APP LOGIC -->
+    <script>
+        // REPLACE WITH YOUR SUPABASE CREDENTIALS
+        const SUPABASE_URL = "YOUR_SUPABASE_URL";
+        const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let userSettings = { monthly_budget: 992, fixed_costs: 450 };
+        let transactions = [];
+
+        // Initialize Lucide Icons
+        window.addEventListener('DOMContentLoaded', async () => {
+            lucide.createIcons();
+            setupAuthListeners();
+            
+            // Check active session
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                currentUser = session.user;
+                showApp();
+            } else {
+                showAuth();
+            }
+
+            // Set date header
+            const options = { weekday: 'short', month: 'short', day: 'numeric' };
+            document.getElementById('current-date-label').innerText = new Date().toLocaleDateString('en-US', options);
+        });
+
+        function showAuth() {
+            document.getElementById('auth-screen').classList.remove('hidden');
+            document.getElementById('app-wrapper').classList.add('hidden');
+        }
+
+        function showApp() {
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('app-wrapper').classList.remove('hidden');
+            loadUserData();
+        }
+
+        function setupAuthListeners() {
+            const errorDiv = document.getElementById('auth-error');
+
+            document.getElementById('btn-login').addEventListener('click', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('auth-email').value;
+                const password = document.getElementById('auth-password').value;
+                errorDiv.classList.add('hidden');
+
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) {
+                    errorDiv.innerText = error.message;
+                    errorDiv.classList.remove('hidden');
+                } else {
+                    currentUser = data.user;
+                    showApp();
+                }
+            });
+
+            document.getElementById('btn-signup').addEventListener('click', async (e) => {
+                e.preventDefault();
+                const email = document.getElementById('auth-email').value;
+                const password = document.getElementById('auth-password').value;
+                errorDiv.classList.add('hidden');
+
+                const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                if (error) {
+                    errorDiv.innerText = error.message;
+                    errorDiv.classList.remove('hidden');
+                } else {
+                    alert('Signup successful! Check your email if confirmation is required, or sign in.');
+                }
+            });
+        }
+
+        async function handleLogout() {
+            await supabaseClient.auth.signOut();
+            currentUser = null;
+            showAuth();
+        }
+
+        async function loadUserData() {
+            if (!currentUser) return;
+
+            // Load Settings
+            let { data: settingsData } = await supabaseClient
+                .from('settings')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .single();
+
+            if (!settingsData) {
+                // Insert default settings if none exist
+                await supabaseClient.from('settings').insert([{ user_id: currentUser.id, monthly_budget: 992, fixed_costs: 450 }]);
+                userSettings = { monthly_budget: 992, fixed_costs: 450 };
+            } else {
+                userSettings = settingsData;
+            }
+
+            // Load Transactions
+            let { data: txData } = await supabaseClient
+                .from('transactions')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('date', { ascending: false });
+
+            transactions = txData || [];
+            updateUI();
+        }
+
+        // Auto-detect tax keywords
+        function autoDetectTax(desc) {
+            const taxKeywords = ['semesterbeitrag', 'db navigator', 'bahncard', 'thalia', 'amazon', 'macbook', 'laptop', 'book', 'buch', 'krankenkasse', 'semester'];
+            const lower = desc.toLowerCase();
+            const isMatch = taxKeywords.some(keyword => lower.includes(keyword));
+            if (isMatch) {
+                document.getElementById('exp-tax').checked = true;
+            }
+        }
+
+        // Expense Form Submission
+        document.getElementById('expense-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('exp-amount').value);
+            const category = document.getElementById('exp-category').value;
+            const description = document.getElementById('exp-desc').value;
+            const isTaxDeductible = document.getElementById('exp-tax').checked;
+
+            const newTx = {
+                user_id: currentUser.id,
+                date: new Date().toISOString().split('T')[0],
+                amount,
+                category,
+                description,
+                is_tax_deductible: isTaxDeductible
+            };
+
+            const { data, error } = await supabaseClient.from('transactions').insert([newTx]).select();
+            if (!error && data) {
+                transactions.unshift(data[0]);
+                document.getElementById('expense-form').reset();
+                updateUI();
+            }
+        });
+
+        async function deleteTransaction(id) {
+            const { error } = await supabaseClient.from('transactions').delete().eq('id', id);
+            if (!error) {
+                transactions = transactions.filter(t => t.id !== id);
+                updateUI();
+            }
+        }
+
+        // Core Calculation Engine
+        function updateUI() {
+            // Stats update
+            document.getElementById('stat-pool').innerText = `€${userSettings.monthly_budget}`;
+            document.getElementById('stat-fixed').innerText = `€${userSettings.fixed_costs}`;
+
+            // Calculate total variable expenses this month
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+
+            const monthTxs = transactions.filter(t => {
+                const d = new Date(t.date);
+                return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+            });
+
+            const totalSpentThisMonth = monthTxs.reduce((sum, t) => sum + Number(t.amount), 0);
+            document.getElementById('stat-spent').innerText = `€${totalSpentThisMonth.toFixed(2)}`;
+
+            // Today spent
+            const todayStr = now.toISOString().split('T')[0];
+            const todaySpent = monthTxs.filter(t => t.date === todayStr).reduce((sum, t) => sum + Number(t.amount), 0);
+
+            // Remaining days in month (inclusive today)
+            const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const remainingDays = lastDayOfMonth - now.getDate() + 1;
+
+            // Daily Limit Formula: (Monthly Pool - Fixed Costs - Total Variable Expenses Spent This Month) / Remaining Days
+            const netAvailablePool = Number(userSettings.monthly_budget) - Number(userSettings.fixed_costs) - totalSpentThisMonth;
+            const dailyLimit = remainingDays > 0 ? Math.max(0, netAvailablePool / remainingDays) : 0;
+
+            document.getElementById('daily-limit-display').innerText = `€${dailyLimit.toFixed(2)}`;
+            document.getElementById('spent-today-label').innerText = `Spent today: €${todaySpent.toFixed(2)}`;
+            document.getElementById('days-remaining-label').innerText = `${remainingDays} days left`;
+
+            // Progress bar
+            const progressPercent = dailyLimit > 0 ? Math.min(100, (todaySpent / (dailyLimit + todaySpent)) * 100) : 100;
+            const progressBar = document.getElementById('progress-bar');
+            const safetyBadge = document.getElementById('safety-badge');
+
+            progressBar.style.width = `${progressPercent}%`;
+
+            if (todaySpent > dailyLimit) {
+                progressBar.className = "bg-rose-500 h-full rounded-full transition-all duration-500";
+                safetyBadge.className = "text-xs px-2.5 py-1 rounded-full font-medium bg-rose-500/10 text-rose-400 border border-rose-500/20";
+                safetyBadge.innerText = "Over Limit";
+            } else if (progressPercent > 75) {
+                progressBar.className = "bg-amber-500 h-full rounded-full transition-all duration-500";
+                safetyBadge.className = "text-xs px-2.5 py-1 rounded-full font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20";
+                safetyBadge.innerText = "Warning >75%";
+            } else {
+                progressBar.className = "bg-emerald-500 h-full rounded-full transition-all duration-500";
+                safetyBadge.className = "text-xs px-2.5 py-1 rounded-full font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                safetyBadge.innerText = "Safe 🟢";
+            }
+
+            renderTransactionsLists();
+        }
+
+        function renderTransactionsLists() {
+            const listEl = document.getElementById('transactions-list');
+            const taxListEl = document.getElementById('tax-transactions-list');
+            document.getElementById('tx-count').innerText = `${transactions.length} items`;
+
+            if (transactions.length === 0) {
+                listEl.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs">No transactions recorded yet.</div>`;
+                taxListEl.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs">No tax-deductible items marked yet.</div>`;
+                return;
+            }
+
+            listEl.innerHTML = transactions.map(t => `
+                <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-white">${t.description}</span>
+                            ${t.is_tax_deductible ? '<span class="text-[10px] bg-indigo-500/10 text-indigo-400 px-1.5 py-0.5 rounded border border-indigo-500/20">Tax 🇩🇪</span>' : ''}
+                        </div>
+                        <span class="text-[10px] text-slate-400">${t.category} • ${t.date}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-bold text-rose-400">-€${Number(t.amount).toFixed(2)}</span>
+                        <button onclick="deleteTransaction('${t.id}')" class="text-slate-600 hover:text-rose-400 transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                    </div>
+                </div>
+            `).join('');
+
+            const taxItems = transactions.filter(t => t.is_tax_deductible);
+            taxListEl.innerHTML = taxItems.length === 0 ? `<div class="text-center py-8 text-slate-500 text-xs">No tax deductions found.</div>` : taxItems.map(t => `
+                <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-white block">${t.description}</span>
+                        <span class="text-[10px] text-slate-400">${t.category} • ${t.date}</span>
+                    </div>
+                    <span class="text-xs font-bold text-indigo-400">€${Number(t.amount).toFixed(2)}</span>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        // Tab Switching
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-indigo-400');
+                btn.classList.add('text-slate-400');
+                if(btn.getAttribute('data-target') === `tab-${tabId}`) {
+                    btn.classList.add('text-indigo-400');
+                    btn.classList.remove('text-slate-400');
+                }
+            });
+        }
+
+        // Settings Modal
+        function openSettingsModal() {
+            document.getElementById('set-pool').value = userSettings.monthly_budget;
+            document.getElementById('set-fixed').value = userSettings.fixed_costs;
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        }
+
+        document.getElementById('settings-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const monthly_budget = parseFloat(document.getElementById('set-pool').value);
+            const fixed_costs = parseFloat(document.getElementById('set-fixed').value);
+
+            const { error } = await supabaseClient.from('settings').update({ monthly_budget, fixed_costs }).eq('user_id', currentUser.id);
+            if (!error) {
+                userSettings = { monthly_budget, fixed_costs };
+                closeSettingsModal();
+                updateUI();
+            }
+        });
+
+        // Export Tax CSV
+        function exportTaxCSV() {
+            const taxItems = transactions.filter(t => t.is_tax_deductible);
+            if (taxItems.length === 0) {
+                alert('No tax-deductible items to export!');
+                return;
+            }
+
+            let csv = 'Date,Description,Category,Amount (EUR),Tax Category\n';
+            taxItems.forEach(t => {
+                csv += `"${t.date}","${t.description}","${t.category}",${t.amount},"Werbungskosten"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `german-tax-deductions-${new Date().getFullYear()}.csv`;
+            a.click();
+        }
+    </script>
+</body>
+</html>
