@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>€992 Budget & Tax Tracker Germany</title>
     
-    <!-- PWA Meta Tags -->
+    <!-- PWA Meta Tags & App Icon -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a">
+    <link rel="apple-touch-icon" href="/App Assets/German App Logo.png">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -41,7 +42,7 @@
 </head>
 <body class="h-full text-slate-100 flex flex-col font-sans select-none antialiased bg-slate-950">
 
-    <!-- AUTH SCREEN (Hidden when logged in) -->
+    <!-- AUTH SCREEN -->
     <div id="auth-screen" class="fixed inset-0 z-50 bg-slate-950 flex flex-col justify-center px-6 py-12 hidden">
         <div class="sm:mx-auto sm:w-full sm:max-w-md">
             <div class="bg-indigo-600 w-12 h-12 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-indigo-500/30 mb-4">
@@ -78,8 +79,8 @@
         <!-- HEADER -->
         <header class="px-5 py-4 flex items-center justify-between border-b border-slate-800/80 bg-slate-900/50 backdrop-blur-md sticky top-0 z-30">
             <div>
-                <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-2">
-                    Germany Budget <span class="text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full border border-indigo-500/30">€992 Pool</span>
+                <h1 id="greeting-label" class="text-base font-bold tracking-tight text-white flex items-center gap-2">
+                    Welcome!
                 </h1>
                 <p id="current-date-label" class="text-xs text-slate-400"></p>
             </div>
@@ -98,7 +99,6 @@
 
             <!-- TAB 1: DASHBOARD -->
             <section id="tab-dashboard" class="tab-content space-y-4">
-                <!-- Daily Allowance Hero Card -->
                 <div class="bg-gradient-to-br from-slate-900 to-slate-850 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
                     <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-indigo-600/10 rounded-full blur-2xl pointer-events-none"></div>
                     <div class="flex justify-between items-start mb-3">
@@ -110,7 +110,6 @@
                         <span class="text-xs text-slate-400">/ day + rollover</span>
                     </div>
 
-                    <!-- Progress Bar -->
                     <div class="space-y-1.5">
                         <div class="flex justify-between text-xs text-slate-400 font-medium">
                             <span id="spent-today-label">Spent today: €0.00</span>
@@ -122,7 +121,6 @@
                     </div>
                 </div>
 
-                <!-- Monthly Financial Health Breakdown -->
                 <div class="grid grid-cols-3 gap-3">
                     <div class="bg-slate-900 border border-slate-800 p-3.5 rounded-2xl">
                         <span class="text-[10px] font-semibold text-slate-400 uppercase block mb-1">Monthly Pool</span>
@@ -138,7 +136,6 @@
                     </div>
                 </div>
 
-                <!-- Quick Expense Logging Form Card -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
                     <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-1.5">
                         <i data-lucide="plus-circle" class="w-4 h-4 text-indigo-400"></i> Log New Expense
@@ -182,12 +179,10 @@
                     <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Transaction History</h2>
                     <span id="tx-count" class="text-xs text-slate-500 font-medium">0 items</span>
                 </div>
-                <div id="transactions-list" class="space-y-2">
-                    <!-- Dynamic Items -->
-                </div>
+                <div id="transactions-list" class="space-y-2"></div>
             </section>
 
-            <!-- TAB 3: GERMAN TAX TRACKER (FINANZAMT) -->
+            <!-- TAB 3: GERMAN TAX TRACKER -->
             <section id="tab-tax" class="tab-content space-y-4 hidden">
                 <div class="bg-gradient-to-br from-indigo-950/40 to-slate-900 border border-indigo-500/20 rounded-2xl p-4">
                     <div class="flex items-center gap-2 mb-2">
@@ -195,15 +190,13 @@
                         <h2 class="text-sm font-bold text-white">Finanzamt Tax Return</h2>
                     </div>
                     <p class="text-xs text-slate-400 leading-relaxed mb-3">
-                        Track study-related expenses (<span class="text-indigo-400 font-medium">Werbungskosten / Sonderausgaben</span>) throughout the year. Build a tax loss carryforward (<span class="text-indigo-400 font-medium">Verlustvortrag</span>) for your future post-grad salary.
+                        Track study-related expenses (<span class="text-indigo-400 font-medium">Werbungskosten / Sonderausgaben</span>). Build a tax loss carryforward (<span class="text-indigo-400 font-medium">Verlustvortrag</span>) for your future post-grad salary.
                     </p>
                     <button onclick="exportTaxCSV()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20">
                         <i data-lucide="download" class="w-4 h-4"></i> Export Tax Deductions (.CSV)
                     </button>
                 </div>
-                <div id="tax-transactions-list" class="space-y-2">
-                    <!-- Dynamic Tax Deductible Items -->
-                </div>
+                <div id="tax-transactions-list" class="space-y-2"></div>
             </section>
 
         </main>
@@ -238,7 +231,7 @@
                     <input type="number" id="set-pool" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
                 </div>
                 <div>
-                    <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Fixed Costs (Rent, Health Ins., etc.) (€)</label>
+                    <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Fixed Costs (€)</label>
                     <input type="number" id="set-fixed" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
                 </div>
                 <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition text-xs shadow-lg shadow-indigo-600/20">Save Settings</button>
@@ -248,7 +241,6 @@
 
     <!-- APP LOGIC -->
     <script>
-        // REPLACE WITH YOUR SUPABASE CREDENTIALS
         const SUPABASE_URL = "https://gpyuydyqayyeeyzkersk.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdweXV5ZHlxYXl5ZWV5emtlcnNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MzA1MjUsImV4cCI6MjEwODIwNjUyNX0.kwNEXP-Jo5dZeVL_iNdG12LWxpFQmHtN1eVim7Jn3ak";
 
@@ -258,12 +250,19 @@
         let userSettings = { monthly_budget: 992, fixed_costs: 450 };
         let transactions = [];
 
-        // Initialize Lucide Icons
         window.addEventListener('DOMContentLoaded', async () => {
             lucide.createIcons();
             setupAuthListeners();
             
-            // Check active session
+            const hour = new Date().getHours();
+            let greeting = "Good evening 🌙";
+            if (hour < 12) {
+                greeting = "Good morning 🌅";
+            } else if (hour < 18) {
+                greeting = "Good afternoon ☀️";
+            }
+            document.getElementById('greeting-label').innerText = greeting;
+
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 currentUser = session.user;
@@ -272,7 +271,6 @@
                 showAuth();
             }
 
-            // Set date header
             const options = { weekday: 'short', month: 'short', day: 'numeric' };
             document.getElementById('current-date-label').innerText = new Date().toLocaleDateString('en-US', options);
         });
@@ -332,7 +330,6 @@
         async function loadUserData() {
             if (!currentUser) return;
 
-            // Load Settings
             let { data: settingsData } = await supabaseClient
                 .from('settings')
                 .select('*')
@@ -340,14 +337,12 @@
                 .single();
 
             if (!settingsData) {
-                // Insert default settings if none exist
                 await supabaseClient.from('settings').insert([{ user_id: currentUser.id, monthly_budget: 992, fixed_costs: 450 }]);
                 userSettings = { monthly_budget: 992, fixed_costs: 450 };
             } else {
                 userSettings = settingsData;
             }
 
-            // Load Transactions
             let { data: txData } = await supabaseClient
                 .from('transactions')
                 .select('*')
@@ -358,7 +353,6 @@
             updateUI();
         }
 
-        // Auto-detect tax keywords
         function autoDetectTax(desc) {
             const taxKeywords = ['semesterbeitrag', 'db navigator', 'bahncard', 'thalia', 'amazon', 'macbook', 'laptop', 'book', 'buch', 'krankenkasse', 'semester'];
             const lower = desc.toLowerCase();
@@ -368,7 +362,6 @@
             }
         }
 
-        // Expense Form Submission
         document.getElementById('expense-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const amount = parseFloat(document.getElementById('exp-amount').value);
@@ -401,13 +394,10 @@
             }
         }
 
-        // Core Calculation Engine
         function updateUI() {
-            // Stats update
             document.getElementById('stat-pool').innerText = `€${userSettings.monthly_budget}`;
             document.getElementById('stat-fixed').innerText = `€${userSettings.fixed_costs}`;
 
-            // Calculate total variable expenses this month
             const now = new Date();
             const currentMonth = now.getMonth();
             const currentYear = now.getFullYear();
@@ -420,15 +410,12 @@
             const totalSpentThisMonth = monthTxs.reduce((sum, t) => sum + Number(t.amount), 0);
             document.getElementById('stat-spent').innerText = `€${totalSpentThisMonth.toFixed(2)}`;
 
-            // Today spent
             const todayStr = now.toISOString().split('T')[0];
             const todaySpent = monthTxs.filter(t => t.date === todayStr).reduce((sum, t) => sum + Number(t.amount), 0);
 
-            // Remaining days in month (inclusive today)
             const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             const remainingDays = lastDayOfMonth - now.getDate() + 1;
 
-            // Daily Limit Formula: (Monthly Pool - Fixed Costs - Total Variable Expenses Spent This Month) / Remaining Days
             const netAvailablePool = Number(userSettings.monthly_budget) - Number(userSettings.fixed_costs) - totalSpentThisMonth;
             const dailyLimit = remainingDays > 0 ? Math.max(0, netAvailablePool / remainingDays) : 0;
 
@@ -436,7 +423,6 @@
             document.getElementById('spent-today-label').innerText = `Spent today: €${todaySpent.toFixed(2)}`;
             document.getElementById('days-remaining-label').innerText = `${remainingDays} days left`;
 
-            // Progress bar
             const progressPercent = dailyLimit > 0 ? Math.min(100, (todaySpent / (dailyLimit + todaySpent)) * 100) : 100;
             const progressBar = document.getElementById('progress-bar');
             const safetyBadge = document.getElementById('safety-badge');
@@ -501,7 +487,6 @@
             lucide.createIcons();
         }
 
-        // Tab Switching
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
@@ -516,7 +501,6 @@
             });
         }
 
-        // Settings Modal
         function openSettingsModal() {
             document.getElementById('set-pool').value = userSettings.monthly_budget;
             document.getElementById('set-fixed').value = userSettings.fixed_costs;
@@ -540,7 +524,6 @@
             }
         });
 
-        // Export Tax CSV
         function exportTaxCSV() {
             const taxItems = transactions.filter(t => t.is_tax_deductible);
             if (taxItems.length === 0) {
