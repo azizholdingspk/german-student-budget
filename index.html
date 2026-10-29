@@ -76,22 +76,27 @@
     <!-- MAIN APP WRAPPER -->
     <div id="app-wrapper" class="flex-1 flex flex-col max-w-md w-full mx-auto relative overflow-hidden hidden">
         
-        <!-- HEADER -->
-        <header class="px-5 py-4 flex items-center justify-between border-b border-slate-800/80 bg-slate-900/50 backdrop-blur-md sticky top-0 z-30">
+        <!-- HEADER WITH DUAL TIME ZONE DISPLAY -->
+        <header class="px-5 py-3 flex items-center justify-between border-b border-slate-800/80 bg-slate-900/50 backdrop-blur-md sticky top-0 z-30">
             <div>
-                <h1 id="greeting-label" class="text-base font-bold tracking-tight text-white flex items-center gap-2">
+                <h1 id="greeting-label" class="text-sm font-bold tracking-tight text-white flex items-center gap-1.5">
                     Welcome!
                 </h1>
-                <p id="current-date-label" class="text-xs text-slate-400"></p>
+                <!-- Dual Time Zones -->
+                <div class="flex items-center gap-2 text-[10px] text-slate-400 mt-0.5 font-medium">
+                    <span id="time-germany" class="text-indigo-400 font-semibold">🇩🇪 --:--</span>
+                    <span>•</span>
+                    <span id="time-home">🏠 --:--</span>
+                </div>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="shareViaWhatsApp()" title="Share via WhatsApp" class="w-9 h-9 bg-emerald-600/20 border border-emerald-500/30 rounded-xl flex items-center justify-center text-emerald-400 hover:bg-emerald-600/30 transition">
+                <button onclick="shareViaWhatsApp()" title="Share via WhatsApp" class="w-8 h-8 bg-emerald-600/20 border border-emerald-500/30 rounded-xl flex items-center justify-center text-emerald-400 hover:bg-emerald-600/30 transition">
                     <i data-lucide="message-circle" class="w-4 h-4"></i>
                 </button>
-                <button onclick="openSettingsModal()" class="w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center text-slate-300 hover:text-white transition">
+                <button onclick="openSettingsModal()" class="w-8 h-8 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center text-slate-300 hover:text-white transition">
                     <i data-lucide="settings" class="w-4 h-4"></i>
                 </button>
-                <button onclick="handleLogout()" class="w-9 h-9 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center text-rose-400 hover:bg-rose-500/10 transition">
+                <button onclick="handleLogout()" class="w-8 h-8 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center text-rose-400 hover:bg-rose-500/10 transition">
                     <i data-lucide="log-out" class="w-4 h-4"></i>
                 </button>
             </div>
@@ -151,22 +156,22 @@
                     </div>
                 </div>
 
-                <!-- Sperrkonto (Blocked Account) Milestone Tracker -->
+                <!-- Editable Sperrkonto (Blocked Account) Milestone Tracker -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-2">
                     <div class="flex justify-between items-center text-xs">
                         <span class="font-bold text-white flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-indigo-400"></i> Sperrkonto Block Progress</span>
-                        <span id="blocked-months-label" class="text-indigo-400 font-semibold">Month 3 of 12</span>
+                        <span id="blocked-months-label" class="text-indigo-400 font-semibold">Month -- of --</span>
                     </div>
                     <div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
-                        <div id="blocked-progress-bar" class="bg-indigo-500 h-full rounded-full" style="width: 25%"></div>
+                        <div id="blocked-progress-bar" class="bg-indigo-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
                     </div>
                     <div class="flex justify-between text-[10px] text-slate-500">
-                        <span>Started: Oct 2026</span>
-                        <span>Renewal: Sep 2027</span>
+                        <span id="sperrkonto-start-lbl">Started: --</span>
+                        <span id="sperrkonto-end-lbl">End: --</span>
                     </div>
                 </div>
 
-                <!-- Currency Converter Widget -->
+                <!-- Currency Converter Widget (Includes AED) -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
                     <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
                         <i data-lucide="repeat" class="w-4 h-4 text-indigo-400"></i> Currency Converter
@@ -179,16 +184,17 @@
                         <div>
                             <label class="block text-[10px] text-slate-400 uppercase mb-1">Target Currency</label>
                             <select id="conv-target" onchange="convertCurrency()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500">
-                                <option value="USD">USD ($)</option>
-                                <option value="GBP">GBP (£)</option>
-                                <option value="INR">INR (₹)</option>
-                                <option value="PKR">PKR (Rs)</option>
+                                <option value="AED">AED - UAE Dirham (🇦🇪)</option>
+                                <option value="USD">USD - US Dollar ($)</option>
+                                <option value="GBP">GBP - British Pound (£)</option>
+                                <option value="INR">INR - Indian Rupee (₹)</option>
+                                <option value="PKR">PKR - Pakistani Rupee (Rs)</option>
                             </select>
                         </div>
                     </div>
                     <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
                         <span class="text-slate-400">Converted Value:</span>
-                        <span id="conv-result" class="font-extrabold text-emerald-400 text-sm">$108.00 USD</span>
+                        <span id="conv-result" class="font-extrabold text-emerald-400 text-sm">396.50 AED</span>
                     </div>
                 </div>
 
@@ -252,7 +258,7 @@
                     </div>
                 </div>
 
-                <!-- Quick Expense Logging Form Card (With Receipt Upload) -->
+                <!-- Quick Expense Logging Form Card (With Receipt Photo Upload) -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
                     <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-1.5">
                         <i data-lucide="plus-circle" class="w-4 h-4 text-indigo-400"></i> Log New Expense
@@ -284,9 +290,8 @@
                                 <input type="date" id="exp-date" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                             </div>
                         </div>
-                        <!-- Receipt File Attachment -->
                         <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Attach Receipt (Optional)</label>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Attach Receipt Photo (Optional)</label>
                             <input type="file" id="exp-receipt" accept="image/*" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500">
                         </div>
                         <div class="flex items-center justify-between pt-1 bg-slate-950/50 p-2.5 rounded-xl border border-slate-800">
@@ -441,41 +446,50 @@
                             <input type="text" id="set-name" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Phone Number</label>
-                            <input type="text" id="set-phone" placeholder="+49..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Home Country / Time Zone</label>
+                            <select id="set-home-tz" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                                <option value="Asia/Dubai">🇦🇪 UAE (GST)</option>
+                                <option value="Asia/Karachi">🇵🇰 Pakistan (PKT)</option>
+                                <option value="Asia/Kolkata">🇮🇳 India (IST)</option>
+                                <option value="America/New_York">🇺🇸 US East (EST)</option>
+                            </select>
                         </div>
                     </div>
                 </div>
 
-                <!-- Theme & Accent Customizer -->
+                <!-- Sperrkonto Tracker Settings -->
                 <div class="space-y-2 border-b border-slate-800 pb-3">
-                    <span class="text-[10px] uppercase font-bold text-indigo-400">Appearance & Accent</span>
+                    <span class="text-[10px] uppercase font-bold text-indigo-400">Sperrkonto (Blocked Account) Config</span>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Theme Mode</label>
-                            <select id="set-theme" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                                <option value="dark">Dark Slate 🌙</option>
-                                <option value="light">Light Clean ☀️</option>
-                            </select>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Start Month</label>
+                            <input type="month" id="set-sperrkonto-start" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Accent Style</label>
-                            <select id="set-accent" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                                <option value="indigo">Indigo / Blue</option>
-                                <option value="emerald">Emerald Green</option>
-                                <option value="amber">Warm Amber</option>
-                            </select>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Total Duration</label>
+                            <input type="number" id="set-sperrkonto-months" value="12" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                         </div>
                     </div>
                 </div>
 
-                <!-- Push Notifications Toggle -->
+                <!-- Theme Customizer -->
+                <div class="space-y-2 border-b border-slate-800 pb-3">
+                    <span class="text-[10px] uppercase font-bold text-indigo-400">Appearance Mode</span>
+                    <div>
+                        <select id="set-theme" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            <option value="dark">Dark Slate 🌙</option>
+                            <option value="light">Light Clean ☀️</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
                 <div class="space-y-2 border-b border-slate-800 pb-3">
                     <span class="text-[10px] uppercase font-bold text-indigo-400">Notifications</span>
                     <div class="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
                         <div>
-                            <span class="text-xs font-bold text-white block">Morning Budget Notification</span>
-                            <span class="text-[10px] text-slate-400">Send daily allowance alert</span>
+                            <span class="text-xs font-bold text-white block">Morning Budget Briefing</span>
+                            <span class="text-[10px] text-slate-400">Alert daily allowance</span>
                         </div>
                         <button type="button" onclick="requestNotificationPermission()" id="notif-toggle-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition">Enable</button>
                     </div>
@@ -511,7 +525,7 @@
                     </div>
 
                     <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex justify-between text-xs font-bold text-slate-300">
-                        <span>Total Calculated Fixed Costs:</span>
+                        <span>Total Fixed Costs:</span>
                         <span id="set-total-fixed" class="text-amber-400">€450.00</span>
                     </div>
                 </div>
@@ -535,11 +549,13 @@
             monthly_budget: 992, 
             fixed_costs: 450, 
             full_name: '', 
-            phone: '', 
+            home_tz: 'Asia/Dubai',
             rent_cost: 350,
             health_ins_cost: 120,
             gez_cost: 18.36,
             internet_cost: 31.64,
+            sperrkonto_start: '2026-10',
+            sperrkonto_months: 12,
             theme_mode: 'dark'
         };
         let transactions = [];
@@ -550,6 +566,7 @@
             lucide.createIcons();
             setupAuthListeners();
             calcDeadlineCountdown();
+            startDualClock();
             
             const todayStr = new Date().toISOString().split('T')[0];
             document.getElementById('exp-date').value = todayStr;
@@ -564,23 +581,41 @@
             } else {
                 showAuth();
             }
-
-            const options = { weekday: 'short', month: 'short', day: 'numeric' };
-            document.getElementById('current-date-label').innerText = new Date().toLocaleDateString('en-US', options) + ' • ' + Intl.DateTimeFormat().resolvedOptions().timeZone;
             
             fetchLocationAndExternalData();
             checkNotificationStatus();
             convertCurrency();
         });
 
-        // CURRENCY CONVERTER RATES
-        const exchangeRates = { USD: 1.08, GBP: 0.85, INR: 91.50, PKR: 301.20 };
+        // DUAL TIME ZONES CLOCK
+        function startDualClock() {
+            function updateClocks() {
+                const now = new Date();
+                
+                // Germany Time (CET/CEST)
+                const deTime = now.toLocaleTimeString('de-DE', { timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit' });
+                document.getElementById('time-germany').innerText = `🇩🇪 DE: ${deTime}`;
+
+                // Home Country Time
+                const homeTz = userSettings.home_tz || 'Asia/Dubai';
+                const homeTime = now.toLocaleTimeString('en-US', { timeZone: homeTz, hour: '2-digit', minute: '2-digit', hour12: false });
+                
+                const flagMap = { 'Asia/Dubai': '🇦🇪 UAE', 'Asia/Karachi': '🇵🇰 PK', 'Asia/Kolkata': '🇮🇳 IN', 'America/New_York': '🇺🇸 US' };
+                const label = flagMap[homeTz] || '🏠 Home';
+                document.getElementById('time-home').innerText = `${label}: ${homeTime}`;
+            }
+            updateClocks();
+            setInterval(updateClocks, 10000);
+        }
+
+        // CURRENCY CONVERTER (With AED)
+        const exchangeRates = { AED: 3.965, USD: 1.08, GBP: 0.85, INR: 91.50, PKR: 301.20 };
         function convertCurrency() {
             const eur = parseFloat(document.getElementById('conv-eur').value) || 0;
             const target = document.getElementById('conv-target').value;
             const rate = exchangeRates[target] || 1;
             const res = eur * rate;
-            const symbols = { USD: '$', GBP: '£', INR: '₹', PKR: 'Rs ' };
+            const symbols = { AED: 'AED ', USD: '$', GBP: '£', INR: '₹', PKR: 'Rs ' };
             document.getElementById('conv-result').innerText = `${symbols[target]}${res.toFixed(2)} ${target}`;
         }
 
@@ -698,7 +733,7 @@
             checkNotificationStatus();
             if (permission === "granted") {
                 new Notification("🇩🇪 FinanzCampus Morning Briefing", {
-                    body: `Today's Dynamic Allowance: €${currentDailyLimit.toFixed(2)}. Have a blessed day!`,
+                    body: `Today's Dynamic Allowance: €${currentDailyLimit.toFixed(2)}. Have a productive day!`,
                     icon: "/App%20Assets/German%20App%20Logo.png"
                 });
             }
@@ -788,10 +823,13 @@
                     monthly_budget: 992, 
                     fixed_costs: 450,
                     full_name: currentUser.email.split('@')[0],
+                    home_tz: 'Asia/Dubai',
                     rent_cost: 350,
                     health_ins_cost: 120,
                     gez_cost: 18.36,
-                    internet_cost: 31.64
+                    internet_cost: 31.64,
+                    sperrkonto_start: '2026-10',
+                    sperrkonto_months: 12
                 };
                 await supabaseClient.from('settings').insert([defaultSettings]);
                 userSettings = defaultSettings;
@@ -865,7 +903,6 @@
                 document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
                 updateUI();
             } else if (error) {
-                // Fallback if receipts bucket hasn't been created yet in Supabase
                 delete newTx.receipt_url;
                 const { data: fallbackData, error: fallbackErr } = await supabaseClient.from('transactions').insert([newTx]).select();
                 if (!fallbackErr && fallbackData) {
@@ -951,6 +988,29 @@
             select.innerHTML = options;
         }
 
+        // RENDER SPERRKONTO TRACKER DYNAMICALLY
+        function renderSperrkontoTracker() {
+            const startMonthStr = userSettings.sperrkonto_start || '2026-10';
+            const totalMonths = Number(userSettings.sperrkonto_months) || 12;
+
+            const startDate = new Date(startMonthStr + "-01");
+            const now = new Date();
+            
+            const diffYears = now.getFullYear() - startDate.getFullYear();
+            const diffMonths = now.getMonth() - startDate.getMonth();
+            const currentMonthIndex = Math.min(totalMonths, Math.max(1, diffYears * 12 + diffMonths + 1));
+
+            const progressPct = Math.min(100, (currentMonthIndex / totalMonths) * 100);
+
+            document.getElementById('blocked-months-label').innerText = `Month ${currentMonthIndex} of ${totalMonths}`;
+            document.getElementById('blocked-progress-bar').style.width = `${progressPct}%`;
+            document.getElementById('sperrkonto-start-lbl').innerText = `Started: ${startMonthStr}`;
+            
+            const endDate = new Date(startDate);
+            endDate.setMonth(startDate.getMonth() + totalMonths - 1);
+            document.getElementById('sperrkonto-end-lbl').innerText = `Renewal: ${endDate.toISOString().slice(0, 7)}`;
+        }
+
         function updateUI() {
             const pool = Number(userSettings.monthly_budget) || 992;
             const rent = Number(userSettings.rent_cost) || 0;
@@ -1003,6 +1063,7 @@
                 safetyBadge.innerText = "Safe";
             }
 
+            renderSperrkontoTracker();
             renderTransactionsLists();
             renderCategoryBreakdown(monthTxs);
             renderExpenseBarGraph(monthTxs, lastDayOfMonth);
@@ -1120,11 +1181,14 @@
 
         function openSettingsModal() {
             document.getElementById('set-name').value = userSettings.full_name || '';
+            document.getElementById('set-home-tz').value = userSettings.home_tz || 'Asia/Dubai';
             document.getElementById('set-pool').value = userSettings.monthly_budget || 992;
             document.getElementById('set-rent').value = userSettings.rent_cost || 350;
             document.getElementById('set-health').value = userSettings.health_ins_cost || 120;
             document.getElementById('set-gez').value = userSettings.gez_cost || 18.36;
             document.getElementById('set-internet').value = userSettings.internet_cost || 31.64;
+            document.getElementById('set-sperrkonto-start').value = userSettings.sperrkonto_start || '2026-10';
+            document.getElementById('set-sperrkonto-months').value = userSettings.sperrkonto_months || 12;
             document.getElementById('set-theme').value = userSettings.theme_mode || 'dark';
             recalcFixedSum();
             checkNotificationStatus();
@@ -1145,15 +1209,18 @@
         document.getElementById('settings-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const full_name = document.getElementById('set-name').value;
+            const home_tz = document.getElementById('set-home-tz').value;
             const monthly_budget = parseFloat(document.getElementById('set-pool').value);
             const rent_cost = parseFloat(document.getElementById('set-rent').value) || 0;
             const health_ins_cost = parseFloat(document.getElementById('set-health').value) || 0;
             const gez_cost = parseFloat(document.getElementById('set-gez').value) || 0;
             const internet_cost = parseFloat(document.getElementById('set-internet').value) || 0;
+            const sperrkonto_start = document.getElementById('set-sperrkonto-start').value;
+            const sperrkonto_months = parseInt(document.getElementById('set-sperrkonto-months').value) || 12;
             const theme_mode = document.getElementById('set-theme').value;
             const fixed_costs = rent_cost + health_ins_cost + gez_cost + internet_cost;
 
-            const updated = { full_name, monthly_budget, fixed_costs, rent_cost, health_ins_cost, gez_cost, internet_cost, theme_mode };
+            const updated = { full_name, home_tz, monthly_budget, fixed_costs, rent_cost, health_ins_cost, gez_cost, internet_cost, sperrkonto_start, sperrkonto_months, theme_mode };
 
             const { error } = await supabaseClient.from('settings').update(updated).eq('user_id', currentUser.id);
             if (!error) {
