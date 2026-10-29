@@ -77,19 +77,18 @@
     <div id="app-wrapper" class="flex-1 flex flex-col max-w-md w-full mx-auto relative overflow-hidden hidden">
         
         <!-- HEADER WITH DUAL TIME ZONE DISPLAY -->
-        <header class="px-5 py-3 flex items-center justify-between border-b border-slate-800/80 bg-slate-900/50 backdrop-blur-md sticky top-0 z-30">
-            <div>
-                <h1 id="greeting-label" class="text-sm font-bold tracking-tight text-white flex items-center gap-1.5">
+        <header class="px-4 py-3 flex items-center justify-between border-b border-slate-800/80 bg-slate-900/50 backdrop-blur-md sticky top-0 z-30">
+            <div class="min-w-0 pr-2">
+                <h1 id="greeting-label" class="text-sm font-bold tracking-tight text-white truncate">
                     Welcome!
                 </h1>
-                <!-- Dual Time Zones -->
-                <div class="flex items-center gap-2 text-[10px] text-slate-400 mt-0.5 font-medium">
-                    <span id="time-germany" class="text-indigo-400 font-semibold">🇩🇪 --:--</span>
+                <div class="flex items-center gap-1.5 text-[10px] text-slate-400 mt-0.5 font-medium truncate">
+                    <span id="time-germany" class="text-indigo-400 font-semibold shrink-0">🇩🇪 DE: --:--</span>
                     <span>•</span>
-                    <span id="time-home">🏠 --:--</span>
+                    <span id="time-home" class="truncate">🇦🇪 UAE: --:--</span>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1.5 shrink-0">
                 <button onclick="shareViaWhatsApp()" title="Share via WhatsApp" class="w-8 h-8 bg-emerald-600/20 border border-emerald-500/30 rounded-xl flex items-center justify-center text-emerald-400 hover:bg-emerald-600/30 transition">
                     <i data-lucide="message-circle" class="w-4 h-4"></i>
                 </button>
@@ -110,56 +109,139 @@
                 
                 <!-- Live Weather & Prayer Times Widget Bar -->
                 <div class="grid grid-cols-2 gap-3">
-                    <!-- Weather Card -->
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 flex items-center gap-3 shadow-md">
-                        <div id="weather-icon" class="text-2xl">🌤️</div>
-                        <div>
-                            <span id="weather-temp" class="text-sm font-bold text-white block">--°C</span>
-                            <span id="weather-desc" class="text-[10px] text-slate-400">Loading Weather...</span>
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 flex items-center gap-2.5 shadow-md">
+                        <div id="weather-icon" class="text-2xl shrink-0">🌤️</div>
+                        <div class="min-w-0">
+                            <span id="weather-temp" class="text-sm font-bold text-white block truncate">--°C</span>
+                            <span id="weather-desc" class="text-[10px] text-slate-400 block truncate">Loading Weather...</span>
                         </div>
                     </div>
-                    <!-- Prayer Times Mini Card -->
                     <div onclick="openPrayerModal()" class="bg-slate-900 border border-slate-800 rounded-2xl p-3 flex items-center justify-between shadow-md cursor-pointer hover:border-indigo-500/50 transition">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 bg-indigo-600/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div class="w-8 h-8 bg-indigo-600/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400 shrink-0">
                                 <i data-lucide="moon" class="w-4 h-4"></i>
                             </div>
-                            <div>
-                                <span class="text-xs font-bold text-white block">Prayer Times</span>
-                                <span id="next-prayer-label" class="text-[10px] text-indigo-400">Loading...</span>
+                            <div class="min-w-0">
+                                <span class="text-xs font-bold text-white block truncate">Prayer Times</span>
+                                <span id="next-prayer-label" class="text-[10px] text-indigo-400 block truncate">Loading...</span>
                             </div>
                         </div>
-                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 shrink-0 ml-1"></i>
                     </div>
                 </div>
 
-                <!-- Daily Allowance Hero Card -->
-                <div class="bg-gradient-to-br from-slate-900 to-slate-850 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+                <!-- Primary Dynamic Allowance & Remaining Balance Hero Card -->
+                <div class="bg-gradient-to-br from-slate-900 to-slate-850 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden space-y-4">
                     <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-indigo-600/10 rounded-full blur-2xl pointer-events-none"></div>
-                    <div class="flex justify-between items-start mb-3">
-                        <span class="text-xs font-semibold tracking-wider text-slate-400 uppercase">Today's Dynamic Allowance</span>
+                    
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-[10px] font-semibold tracking-wider text-slate-400 uppercase block">Today's Dynamic Allowance</span>
+                            <div class="flex items-baseline gap-1.5 mt-0.5">
+                                <h2 id="daily-limit-display" class="text-3xl font-extrabold tracking-tight text-white">€0.00</h2>
+                                <span class="text-xs text-slate-400">/ day</span>
+                            </div>
+                        </div>
                         <span id="safety-badge" class="text-xs px-2.5 py-1 rounded-full font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Safe</span>
                     </div>
-                    <div class="flex items-baseline gap-2 mb-4">
-                        <h2 id="daily-limit-display" class="text-3xl font-extrabold tracking-tight text-white">€0.00</h2>
-                        <span class="text-xs text-slate-400">/ day + rollover</span>
+
+                    <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/80">
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/60">
+                            <span class="text-[10px] text-slate-400 block uppercase font-medium">Remaining Pool</span>
+                            <span id="math-left-month" class="text-sm font-extrabold text-emerald-400">€0.00</span>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/60">
+                            <span class="text-[10px] text-slate-400 block uppercase font-medium">Spent Today</span>
+                            <span id="spent-today-label" class="text-sm font-extrabold text-indigo-400">€0.00</span>
+                        </div>
                     </div>
 
-                    <div class="space-y-1.5">
-                        <div class="flex justify-between text-xs text-slate-400 font-medium">
-                            <span id="spent-today-label">Spent today: €0.00</span>
-                            <span id="days-remaining-label">0 days left</span>
+                    <div class="space-y-1.5 pt-1">
+                        <div class="flex justify-between text-[11px] text-slate-400 font-medium">
+                            <span>Daily Budget Usage</span>
+                            <span id="days-remaining-label">0 days left in month</span>
                         </div>
-                        <div class="w-full bg-slate-950 rounded-full h-2.5 overflow-hidden p-0.5 border border-slate-800">
+                        <div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
                             <div id="progress-bar" class="bg-emerald-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Editable Sperrkonto (Blocked Account) Milestone Tracker -->
+                <!-- Upcoming Bills / Fixed Costs Summary Card -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                            <i data-lucide="receipt" class="w-4 h-4 text-amber-400"></i> Fixed Monthly Bills
+                        </h3>
+                        <span id="total-fixed-summary" class="text-xs font-extrabold text-amber-400">-€450.00</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div class="bg-slate-950 p-2 rounded-xl border border-slate-800/60 flex justify-between">
+                            <span class="text-slate-400">Warmmiete (Rent)</span>
+                            <span id="bill-rent-val" class="font-bold text-white">€350</span>
+                        </div>
+                        <div class="bg-slate-950 p-2 rounded-xl border border-slate-800/60 flex justify-between">
+                            <span class="text-slate-400">Krankenkasse</span>
+                            <span id="bill-health-val" class="font-bold text-white">€120</span>
+                        </div>
+                        <div class="bg-slate-950 p-2 rounded-xl border border-slate-800/60 flex justify-between">
+                            <span class="text-slate-400">GEZ (Rundfunk)</span>
+                            <span id="bill-gez-val" class="font-bold text-white">€18.36</span>
+                        </div>
+                        <div class="bg-slate-950 p-2 rounded-xl border border-slate-800/60 flex justify-between">
+                            <span class="text-slate-400">WiFi / Mobile</span>
+                            <span id="bill-internet-val" class="font-bold text-white">€31.64</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simplified Expense Entry Form -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-1.5">
+                        <i data-lucide="plus-circle" class="w-4 h-4 text-indigo-400"></i> Log Quick Expense
+                    </h3>
+                    <form id="expense-form" class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Amount (€)</label>
+                                <input type="number" step="0.01" id="exp-amount" required placeholder="0.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Category</label>
+                                <select id="exp-category" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+                                    <option value="Food">🛒 Groceries / Food</option>
+                                    <option value="Transport">🚆 Transport / DB</option>
+                                    <option value="Study">📚 Study / Books</option>
+                                    <option value="Leisure">☕ Leisure / Cafe</option>
+                                    <option value="Other">💡 Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Note (Optional)</label>
+                                <input type="text" id="exp-desc" placeholder="e.g. Rewe, Books..." oninput="autoDetectTax(this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Date</label>
+                                <input type="date" id="exp-date" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-1 bg-slate-950/50 p-2.5 rounded-xl border border-slate-800">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="landmark" class="w-4 h-4 text-indigo-400"></i>
+                                <span class="text-xs font-medium text-slate-300">Tax Deductible 🇩🇪</span>
+                            </div>
+                            <input type="checkbox" id="exp-tax" class="w-4 h-4 accent-indigo-600 rounded bg-slate-950 border-slate-800">
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition text-sm shadow-lg shadow-indigo-600/20">Add Expense</button>
+                    </form>
+                </div>
+
+                <!-- Sperrkonto (Blocked Account) Milestone Tracker -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-2">
                     <div class="flex justify-between items-center text-xs">
-                        <span class="font-bold text-white flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-indigo-400"></i> Sperrkonto Block Progress</span>
+                        <span class="font-bold text-white flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-indigo-400"></i> Sperrkonto Progress</span>
                         <span id="blocked-months-label" class="text-indigo-400 font-semibold">Month -- of --</span>
                     </div>
                     <div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
@@ -171,7 +253,7 @@
                     </div>
                 </div>
 
-                <!-- Currency Converter Widget (Includes AED) -->
+                <!-- Currency Converter Widget -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
                     <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
                         <i data-lucide="repeat" class="w-4 h-4 text-indigo-400"></i> Currency Converter
@@ -204,7 +286,7 @@
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300">📈 Monthly Expense Trends</h3>
                         <span id="graph-month-label" class="text-[10px] text-indigo-400 font-medium">This Month</span>
                     </div>
-                    <div id="expense-bar-graph" class="h-32 flex items-end gap-1 pt-4 pb-1 px-1 border-b border-slate-800"></div>
+                    <div id="expense-bar-graph" class="h-28 flex items-end gap-1 pt-4 pb-1 px-1 border-b border-slate-800"></div>
                     <div class="flex justify-between text-[10px] text-slate-500 px-1">
                         <span>Day 1</span>
                         <span>Mid Month</span>
@@ -215,7 +297,7 @@
                 <!-- Semester & Visa Deadlines Widget -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-indigo-600/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400">
+                        <div class="w-10 h-10 bg-indigo-600/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400 shrink-0">
                             <i data-lucide="calendar-clock" class="w-5 h-5"></i>
                         </div>
                         <div>
@@ -226,84 +308,6 @@
                     <span id="deadline-badge" class="text-xs font-bold bg-indigo-500/10 text-indigo-400 px-2.5 py-1 rounded-lg border border-indigo-500/20">- Days</span>
                 </div>
 
-                <!-- Explicit Math Breakdown Widget -->
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-2 text-xs">
-                    <div class="font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center justify-between">
-                        <span>🧮 Monthly Math Breakdown</span>
-                        <span class="text-indigo-400 font-medium">Auto-Calculated</span>
-                    </div>
-                    <div class="flex justify-between text-slate-400 border-b border-slate-800/60 pb-1.5">
-                        <span>Monthly Pool (Sperrkonto / BAföG)</span>
-                        <span id="math-pool" class="font-bold text-white">€992.00</span>
-                    </div>
-                    <div class="flex justify-between text-slate-400 border-b border-slate-800/60 pb-1.5">
-                        <span>Total Fixed Costs (Rent + Ins + GEZ)</span>
-                        <span id="math-fixed" class="font-bold text-amber-400">-€450.00</span>
-                    </div>
-                    <div class="flex justify-between text-slate-400 border-b border-slate-800/60 pb-1.5 font-medium">
-                        <span>Variable Pool Left for Month</span>
-                        <span id="math-variable" class="font-bold text-indigo-400">€542.00</span>
-                    </div>
-                    <div class="flex justify-between text-slate-300 pt-1">
-                        <span>Total Left for Month (After Expenses)</span>
-                        <span id="math-left-month" class="font-extrabold text-emerald-400">€542.00</span>
-                    </div>
-                </div>
-
-                <!-- Category Visual Breakdown -->
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
-                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300">Category Breakdown (This Month)</h3>
-                    <div id="category-breakdown-list" class="space-y-2 text-xs">
-                        <div class="text-slate-500 text-center py-2">No variable expenses logged yet.</div>
-                    </div>
-                </div>
-
-                <!-- Quick Expense Logging Form Card (With Receipt Photo Upload) -->
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
-                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-1.5">
-                        <i data-lucide="plus-circle" class="w-4 h-4 text-indigo-400"></i> Log New Expense
-                    </h3>
-                    <form id="expense-form" class="space-y-3">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Amount (€)</label>
-                                <input type="number" step="0.01" id="exp-amount" required placeholder="0.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Category</label>
-                                <select id="exp-category" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-                                    <option value="Food">🛒 Groceries / Food</option>
-                                    <option value="Transport">🚆 Transport / DB</option>
-                                    <option value="Study">📚 Study / Books</option>
-                                    <option value="Leisure">☕ Leisure / Cafe</option>
-                                    <option value="Other">💡 Other</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Description</label>
-                                <input type="text" id="exp-desc" required placeholder="e.g. Rewe, DB..." oninput="autoDetectTax(this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Date</label>
-                                <input type="date" id="exp-date" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Attach Receipt Photo (Optional)</label>
-                            <input type="file" id="exp-receipt" accept="image/*" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500">
-                        </div>
-                        <div class="flex items-center justify-between pt-1 bg-slate-950/50 p-2.5 rounded-xl border border-slate-800">
-                            <div class="flex items-center gap-2">
-                                <i data-lucide="landmark" class="w-4 h-4 text-indigo-400"></i>
-                                <span class="text-xs font-medium text-slate-300">Tax Deductible 🇩🇪</span>
-                            </div>
-                            <input type="checkbox" id="exp-tax" class="w-4 h-4 accent-indigo-600 rounded bg-slate-950 border-slate-800">
-                        </div>
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition text-sm shadow-lg shadow-indigo-600/20">Add Expense</button>
-                    </form>
-                </div>
             </section>
 
             <!-- TAB 2: TRANSACTIONS HISTORY & FILTERING -->
@@ -313,7 +317,6 @@
                     <span id="tx-count" class="text-xs text-slate-500 font-medium">0 items</span>
                 </div>
 
-                <!-- Filter Controls Bar -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 grid grid-cols-2 gap-2 text-xs">
                     <div>
                         <label class="block text-[10px] text-slate-400 uppercase mb-1 font-bold">Filter Mode</label>
@@ -339,10 +342,10 @@
                 <div class="bg-gradient-to-br from-indigo-950/40 to-slate-900 border border-indigo-500/20 rounded-2xl p-4">
                     <div class="flex items-center gap-2 mb-2">
                         <span class="text-xl">🇩🇪</span>
-                        <h2 class="text-sm font-bold text-white">Finanzamt Tax Return</h2>
+                        <h2 class="text-sm font-bold text-white">Finanzamt Tax Loss Carryforward</h2>
                     </div>
                     <p class="text-xs text-slate-400 leading-relaxed mb-3">
-                        Track study-related expenses (<span class="text-indigo-400 font-medium">Werbungskosten / Sonderausgaben</span>). Build a tax loss carryforward (<span class="text-indigo-400 font-medium">Verlustvortrag</span>) for your future post-grad salary.
+                        Track study expenses (<span class="text-indigo-400 font-medium">Werbungskosten</span>) to offset taxes once you start your full-time job in Germany (<span class="text-indigo-400 font-medium">Verlustvortrag</span>).
                     </p>
                     <button onclick="exportTaxCSV()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20">
                         <i data-lucide="download" class="w-4 h-4"></i> Export Tax Deductions (.CSV)
@@ -376,14 +379,14 @@
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
                 <div class="flex items-center gap-2">
                     <span class="text-xl">🕌</span>
-                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Today's Prayer Times</h3>
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Prayer Schedule</h3>
                 </div>
                 <button onclick="closePrayerModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div id="prayer-list-content" class="space-y-2 text-xs">
                 <div class="text-slate-400 text-center py-4">Fetching prayer schedule...</div>
             </div>
-            <div class="text-[10px] text-slate-500 text-center">Calculated automatically for your current location.</div>
+            <div class="text-[10px] text-slate-500 text-center">Calculated for your current location.</div>
         </div>
     </div>
 
@@ -413,8 +416,8 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Description</label>
-                    <input type="text" id="edit-desc" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Note (Optional)</label>
+                    <input type="text" id="edit-desc" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
                 </div>
                 <div>
                     <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Date</label>
@@ -429,12 +432,15 @@
         </div>
     </div>
 
-    <!-- SETTINGS & PROFILE MODAL -->
+    <!-- SETTINGS & ONBOARDING MODAL -->
     <div id="settings-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto no-scrollbar">
             <div class="flex justify-between items-center">
-                <h3 class="text-sm font-bold text-white uppercase tracking-wider">Profile & Budget Settings</h3>
-                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+                <div>
+                    <h3 id="settings-modal-title" class="text-sm font-bold text-white uppercase tracking-wider">Profile & Budget Setup</h3>
+                    <p class="text-[10px] text-slate-400">Configure your German living costs</p>
+                </div>
+                <button id="settings-close-btn" onclick="closeSettingsModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
             <form id="settings-form" class="space-y-3">
@@ -443,10 +449,10 @@
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Full Name</label>
-                            <input type="text" id="set-name" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            <input type="text" id="set-name" required placeholder="Ali" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Home Country / Time Zone</label>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Home Time Zone</label>
                             <select id="set-home-tz" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                                 <option value="Asia/Dubai">🇦🇪 UAE (GST)</option>
                                 <option value="Asia/Karachi">🇵🇰 Pakistan (PKT)</option>
@@ -459,78 +465,55 @@
 
                 <!-- Sperrkonto Tracker Settings -->
                 <div class="space-y-2 border-b border-slate-800 pb-3">
-                    <span class="text-[10px] uppercase font-bold text-indigo-400">Sperrkonto (Blocked Account) Config</span>
+                    <span class="text-[10px] uppercase font-bold text-indigo-400">Sperrkonto Config</span>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Start Month</label>
                             <input type="month" id="set-sperrkonto-start" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Total Duration</label>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Duration (Months)</label>
                             <input type="number" id="set-sperrkonto-months" value="12" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                         </div>
                     </div>
                 </div>
 
-                <!-- Theme Customizer -->
-                <div class="space-y-2 border-b border-slate-800 pb-3">
-                    <span class="text-[10px] uppercase font-bold text-indigo-400">Appearance Mode</span>
-                    <div>
-                        <select id="set-theme" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                            <option value="dark">Dark Slate 🌙</option>
-                            <option value="light">Light Clean ☀️</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Notifications -->
-                <div class="space-y-2 border-b border-slate-800 pb-3">
-                    <span class="text-[10px] uppercase font-bold text-indigo-400">Notifications</span>
-                    <div class="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-                        <div>
-                            <span class="text-xs font-bold text-white block">Morning Budget Briefing</span>
-                            <span class="text-[10px] text-slate-400">Alert daily allowance</span>
-                        </div>
-                        <button type="button" onclick="requestNotificationPermission()" id="notif-toggle-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition">Enable</button>
-                    </div>
-                </div>
-
                 <div class="space-y-2">
-                    <span class="text-[10px] uppercase font-bold text-indigo-400">Monthly Budget & Fixed Breakdown</span>
+                    <span class="text-[10px] uppercase font-bold text-indigo-400">Monthly Budget & Living Costs</span>
                     <div>
-                        <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Monthly Pool (€)</label>
-                        <input type="number" step="0.01" id="set-pool" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                        <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Monthly Allowance (€)</label>
+                        <input type="number" step="0.01" id="set-pool" required placeholder="992.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                     </div>
                     
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Rent / Warmmiete (€)</label>
-                            <input type="number" step="0.01" id="set-rent" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Warmmiete / Rent (€)</label>
+                            <input type="number" step="0.01" id="set-rent" placeholder="350.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
                         </div>
                         <div>
                             <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Health Ins. (€)</label>
-                            <input type="number" step="0.01" id="set-health" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
+                            <input type="number" step="0.01" id="set-health" placeholder="120.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">GEZ (€)</label>
-                            <input type="number" step="0.01" id="set-gez" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">GEZ Fee (€)</label>
+                            <input type="number" step="0.01" id="set-gez" placeholder="18.36" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Internet / Phone (€)</label>
-                            <input type="number" step="0.01" id="set-internet" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">WiFi / Phone (€)</label>
+                            <input type="number" step="0.01" id="set-internet" placeholder="31.64" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
                         </div>
                     </div>
 
                     <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex justify-between text-xs font-bold text-slate-300">
-                        <span>Total Fixed Costs:</span>
-                        <span id="set-total-fixed" class="text-amber-400">€450.00</span>
+                        <span>Total Fixed Bills:</span>
+                        <span id="set-total-fixed" class="text-amber-400">€520.00</span>
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition text-xs shadow-lg">Save Profile & Budget</button>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition text-xs shadow-lg shadow-indigo-600/20">Save & Enter Dashboard</button>
             </form>
         </div>
     </div>
@@ -545,19 +528,7 @@
         });
 
         let currentUser = null;
-        let userSettings = { 
-            monthly_budget: 992, 
-            fixed_costs: 450, 
-            full_name: '', 
-            home_tz: 'Asia/Dubai',
-            rent_cost: 350,
-            health_ins_cost: 120,
-            gez_cost: 18.36,
-            internet_cost: 31.64,
-            sperrkonto_start: '2026-10',
-            sperrkonto_months: 12,
-            theme_mode: 'dark'
-        };
+        let userSettings = null;
         let transactions = [];
         let currentDailyLimit = 0;
         let todayPrayerData = null;
@@ -583,7 +554,6 @@
             }
             
             fetchLocationAndExternalData();
-            checkNotificationStatus();
             convertCurrency();
         });
 
@@ -591,13 +561,10 @@
         function startDualClock() {
             function updateClocks() {
                 const now = new Date();
-                
-                // Germany Time (CET/CEST)
                 const deTime = now.toLocaleTimeString('de-DE', { timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit' });
                 document.getElementById('time-germany').innerText = `🇩🇪 DE: ${deTime}`;
 
-                // Home Country Time
-                const homeTz = userSettings.home_tz || 'Asia/Dubai';
+                const homeTz = (userSettings && userSettings.home_tz) ? userSettings.home_tz : 'Asia/Dubai';
                 const homeTime = now.toLocaleTimeString('en-US', { timeZone: homeTz, hour: '2-digit', minute: '2-digit', hour12: false });
                 
                 const flagMap = { 'Asia/Dubai': '🇦🇪 UAE', 'Asia/Karachi': '🇵🇰 PK', 'Asia/Kolkata': '🇮🇳 IN', 'America/New_York': '🇺🇸 US' };
@@ -608,7 +575,7 @@
             setInterval(updateClocks, 10000);
         }
 
-        // CURRENCY CONVERTER (With AED)
+        // CURRENCY CONVERTER
         const exchangeRates = { AED: 3.965, USD: 1.08, GBP: 0.85, INR: 91.50, PKR: 301.20 };
         function convertCurrency() {
             const eur = parseFloat(document.getElementById('conv-eur').value) || 0;
@@ -622,17 +589,15 @@
         async function fetchLocationAndExternalData() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    fetchWeather(lat, lon);
-                    fetchPrayerTimes(lat, lon);
+                    fetchWeather(position.coords.latitude, position.coords.longitude);
+                    fetchPrayerTimes(position.coords.latitude, position.coords.longitude);
                 }, () => {
-                    fetchWeather(52.52, 13.405);
-                    fetchPrayerTimes(52.52, 13.405);
+                    fetchWeather(25.2048, 55.2708);
+                    fetchPrayerTimes(25.2048, 55.2708);
                 });
             } else {
-                fetchWeather(52.52, 13.405);
-                fetchPrayerTimes(52.52, 13.405);
+                fetchWeather(25.2048, 55.2708);
+                fetchPrayerTimes(25.2048, 55.2708);
             }
         }
 
@@ -646,24 +611,24 @@
                     document.getElementById('weather-desc').innerText = getWeatherCondition(data.current_weather.weathercode);
                 }
             } catch (e) {
-                document.getElementById('weather-desc').innerText = 'Temp unavailable';
+                document.getElementById('weather-desc').innerText = 'Temp N/A';
             }
         }
 
-        function getWeatherCodeDescription(code) {
-            if (code === 0) return "Clear sky ☀️";
+        function getWeatherCondition(code) {
+            if (code === 0) return "Clear ☀️";
             if (code <= 3) return "Partly cloudy 🌤️";
             if (code <= 48) return "Foggy 🌫️";
             if (code <= 67) return "Rainy 🌧️";
             if (code <= 77) return "Snowy ❄️";
             return "Fair ⛅";
         }
-        const getWeatherCondition = getWeatherCodeDescription;
 
-        async function fetchPrayerTimes(lat, lon) {
+        async function fetchPrayerTimes(lat = 25.2048, lon = 55.2708) {
             try {
-                const dateStr = new Date().toISOString().split('T')[0].split('-').reverse().join('-');
-                const res = await fetch(`https://api.aladhan.com/v1/timings/${dateStr}?latitude=${lat}&longitude=${lon}&method=3`);
+                const today = new Date();
+                const dateStr = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
+                const res = await fetch(`https://api.aladhan.com/v1/timings/${dateStr}?latitude=${lat}&longitude=${lon}&method=4`);
                 const data = await res.json();
                 if (data && data.data) {
                     todayPrayerData = data.data.timings;
@@ -680,7 +645,7 @@
                     `;
                 }
             } catch (e) {
-                document.getElementById('next-prayer-label').innerText = 'Unavailable';
+                document.getElementById('next-prayer-label').innerText = 'Fajr 05:00 / Dhuhr 12:15';
             }
         }
 
@@ -699,55 +664,20 @@
             let next = prayers[0];
             for (let p of prayers) {
                 const [h, m] = p.time.split(':').map(Number);
-                const pMinutes = h * 60 + m;
-                if (currentTime < pMinutes) {
-                    next = p;
-                    break;
-                }
+                if (currentTime < (h * 60 + m)) { next = p; break; }
             }
-            document.getElementById('next-prayer-label').innerText = `Next: ${next.name} at ${next.time}`;
+            document.getElementById('next-prayer-label').innerText = `${next.name} ${next.time}`;
         }
 
         function openPrayerModal() { document.getElementById('prayer-modal').classList.remove('hidden'); }
         function closePrayerModal() { document.getElementById('prayer-modal').classList.add('hidden'); }
 
-        // NOTIFICATIONS
-        function checkNotificationStatus() {
-            const btn = document.getElementById('notif-toggle-btn');
-            if (!("Notification" in window)) {
-                btn.innerText = "Not Supported";
-                return;
-            }
-            if (Notification.permission === "granted") {
-                btn.innerText = "Enabled ✓";
-                btn.className = "bg-emerald-600 text-white text-xs font-medium px-3 py-1.5 rounded-lg";
-            } else if (Notification.permission === "denied") {
-                btn.innerText = "Blocked ✕";
-                btn.className = "bg-rose-600 text-white text-xs font-medium px-3 py-1.5 rounded-lg";
-            }
-        }
-
-        async function requestNotificationPermission() {
-            if (!("Notification" in window)) return;
-            const permission = await Notification.requestPermission();
-            checkNotificationStatus();
-            if (permission === "granted") {
-                new Notification("🇩🇪 FinanzCampus Morning Briefing", {
-                    body: `Today's Dynamic Allowance: €${currentDailyLimit.toFixed(2)}. Have a productive day!`,
-                    icon: "/App%20Assets/German%20App%20Logo.png"
-                });
-            }
-        }
-
         function calcDeadlineCountdown() {
             const now = new Date();
             let targetYear = now.getFullYear();
             let targetDate = new Date(targetYear, 8, 15);
-            if (now > targetDate) {
-                targetDate = new Date(targetYear + 1, 2, 15);
-            }
-            const diffTime = targetDate - now;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (now > targetDate) targetDate = new Date(targetYear + 1, 2, 15);
+            const diffDays = Math.ceil((targetDate - now) / (1000 * 60 * 60 * 24));
             document.getElementById('deadline-countdown').innerText = `Semesterbeitrag Deadline`;
             document.getElementById('deadline-badge').innerText = `${diffDays} days left`;
         }
@@ -773,13 +703,8 @@
                 errorDiv.classList.add('hidden');
 
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) {
-                    errorDiv.innerText = error.message;
-                    errorDiv.classList.remove('hidden');
-                } else {
-                    currentUser = data.user;
-                    showApp();
-                }
+                if (error) { errorDiv.innerText = error.message; errorDiv.classList.remove('hidden'); }
+                else { currentUser = data.user; showApp(); }
             });
 
             document.getElementById('btn-signup').addEventListener('click', async (e) => {
@@ -789,15 +714,10 @@
                 errorDiv.classList.add('hidden');
 
                 const { data, error } = await supabaseClient.auth.signUp({ email, password });
-                if (error) {
-                    errorDiv.innerText = error.message;
-                    errorDiv.classList.remove('hidden');
-                } else {
-                    alert('Signup successful! You are now logged in.');
-                    if(data.user) {
-                        currentUser = data.user;
-                        showApp();
-                    }
+                if (error) { errorDiv.innerText = error.message; errorDiv.classList.remove('hidden'); }
+                else {
+                    alert('Signup successful!');
+                    if(data.user) { currentUser = data.user; showApp(); }
                 }
             });
         }
@@ -808,93 +728,51 @@
             showAuth();
         }
 
+        // AUTOMATIC ROUTING: NEW USERS TO SETUP, RETURNING USERS TO DASHBOARD
         async function loadUserData() {
             if (!currentUser) return;
 
-            let { data: settingsData } = await supabaseClient
-                .from('settings')
-                .select('*')
-                .eq('user_id', currentUser.id)
-                .single();
+            let { data: settingsData } = await supabaseClient.from('settings').select('*').eq('user_id', currentUser.id).single();
 
             if (!settingsData) {
-                const defaultSettings = { 
-                    user_id: currentUser.id, 
-                    monthly_budget: 992, 
-                    fixed_costs: 450,
-                    full_name: currentUser.email.split('@')[0],
-                    home_tz: 'Asia/Dubai',
-                    rent_cost: 350,
-                    health_ins_cost: 120,
-                    gez_cost: 18.36,
-                    internet_cost: 31.64,
-                    sperrkonto_start: '2026-10',
-                    sperrkonto_months: 12
-                };
-                await supabaseClient.from('settings').insert([defaultSettings]);
-                userSettings = defaultSettings;
+                // New user flow: Open onboarding modal directly
+                document.getElementById('settings-close-btn').classList.add('hidden');
+                openSettingsModal(true);
             } else {
                 userSettings = settingsData;
+                document.getElementById('settings-close-btn').classList.remove('hidden');
+                
+                const displayName = userSettings.full_name ? userSettings.full_name : currentUser.email.split('@')[0];
+                const capitalizedName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+                
+                const hour = new Date().getHours();
+                let greeting = "Good evening 🌙";
+                if (hour < 12) greeting = "Good morning 🌅";
+                else if (hour < 18) greeting = "Good afternoon ☀️";
+
+                document.getElementById('greeting-label').innerText = `${greeting}, ${capitalizedName}!`;
+
+                let { data: txData } = await supabaseClient.from('transactions').select('*').eq('user_id', currentUser.id).order('date', { ascending: false });
+                transactions = txData || [];
+                updateUI();
             }
-
-            const displayName = userSettings.full_name ? userSettings.full_name : currentUser.email.split('@')[0];
-            const capitalizedName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
-            
-            const hour = new Date().getHours();
-            let greeting = "Good evening 🌙";
-            if (hour < 12) greeting = "Good morning 🌅";
-            else if (hour < 18) greeting = "Good afternoon ☀️";
-
-            document.getElementById('greeting-label').innerText = `${greeting}, ${capitalizedName}!`;
-
-            let { data: txData } = await supabaseClient
-                .from('transactions')
-                .select('*')
-                .eq('user_id', currentUser.id)
-                .order('date', { ascending: false });
-
-            transactions = txData || [];
-            updateUI();
         }
 
         function autoDetectTax(desc) {
             const taxKeywords = ['semesterbeitrag', 'db navigator', 'bahncard', 'thalia', 'amazon', 'macbook', 'laptop', 'book', 'buch', 'krankenkasse', 'semester'];
-            const lower = desc.toLowerCase();
-            const isMatch = taxKeywords.some(keyword => lower.includes(keyword));
-            if (isMatch) {
-                document.getElementById('exp-tax').checked = true;
-            }
+            document.getElementById('exp-tax').checked = taxKeywords.some(k => desc.toLowerCase().includes(k));
         }
 
+        // SIMPLIFIED EXPENSE LOGGING
         document.getElementById('expense-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const amount = parseFloat(document.getElementById('exp-amount').value);
             const category = document.getElementById('exp-category').value;
-            const description = document.getElementById('exp-desc').value;
+            const description = document.getElementById('exp-desc').value || category;
             const date = document.getElementById('exp-date').value;
             const isTaxDeductible = document.getElementById('exp-tax').checked;
-            const fileInput = document.getElementById('exp-receipt');
-            
-            let receiptUrl = null;
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const filePath = `${currentUser.id}/${Date.now()}_${file.name}`;
-                const { data: uploadData, error: uploadError } = await supabaseClient.storage.from('receipts').upload(filePath, file);
-                if (!uploadError) {
-                    const { data: { publicUrl } } = supabaseClient.storage.from('receipts').getPublicUrl(filePath);
-                    receiptUrl = publicUrl;
-                }
-            }
 
-            const newTx = {
-                user_id: currentUser.id,
-                date,
-                amount,
-                category,
-                description,
-                is_tax_deductible: isTaxDeductible,
-                receipt_url: receiptUrl
-            };
+            const newTx = { user_id: currentUser.id, date, amount, category, description, is_tax_deductible: isTaxDeductible };
 
             const { data, error } = await supabaseClient.from('transactions').insert([newTx]).select();
             if (!error && data) {
@@ -903,23 +781,13 @@
                 document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
                 updateUI();
             } else if (error) {
-                delete newTx.receipt_url;
-                const { data: fallbackData, error: fallbackErr } = await supabaseClient.from('transactions').insert([newTx]).select();
-                if (!fallbackErr && fallbackData) {
-                    transactions.unshift(fallbackData[0]);
-                    document.getElementById('expense-form').reset();
-                    document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
-                    updateUI();
-                }
+                alert('Error adding expense: ' + error.message);
             }
         });
 
         async function deleteTransaction(id) {
             const { error } = await supabaseClient.from('transactions').delete().eq('id', id);
-            if (!error) {
-                transactions = transactions.filter(t => t.id !== id);
-                updateUI();
-            }
+            if (!error) { transactions = transactions.filter(t => t.id !== id); updateUI(); }
         }
 
         function openEditModal(id) {
@@ -942,7 +810,7 @@
             const updated = {
                 amount: parseFloat(document.getElementById('edit-amount').value),
                 category: document.getElementById('edit-category').value,
-                description: document.getElementById('edit-desc').value,
+                description: document.getElementById('edit-desc').value || document.getElementById('edit-category').value,
                 date: document.getElementById('edit-date').value,
                 is_tax_deductible: document.getElementById('edit-tax').checked
             };
@@ -963,9 +831,7 @@
             const dInput = document.getElementById('filter-input-day');
             const wInput = document.getElementById('filter-input-week');
 
-            mInput.classList.add('hidden');
-            dInput.classList.add('hidden');
-            wInput.classList.add('hidden');
+            mInput.classList.add('hidden'); dInput.classList.add('hidden'); wInput.classList.add('hidden');
 
             if (mode === 'month') { label.innerText = 'Select Month'; mInput.classList.remove('hidden'); }
             else if (mode === 'day') { label.innerText = 'Select Day'; dInput.classList.remove('hidden'); }
@@ -978,18 +844,15 @@
             let options = '';
             const now = new Date();
             for (let i = 0; i < 4; i++) {
-                const start = new Date(now);
-                start.setDate(now.getDate() - (i * 7) - now.getDay());
-                const end = new Date(start);
-                end.setDate(start.getDate() + 6);
-                const val = `${start.toISOString().split('T')[0]}_${end.toISOString().split('T')[0]}`;
-                options += `<option value="${val}">${start.toLocaleDateString()} - ${end.toLocaleDateString()}</option>`;
+                const start = new Date(now); start.setDate(now.getDate() - (i * 7) - now.getDay());
+                const end = new Date(start); end.setDate(start.getDate() + 6);
+                options += `<option value="${start.toISOString().split('T')[0]}_${end.toISOString().split('T')[0]}">${start.toLocaleDateString()} - ${end.toLocaleDateString()}</option>`;
             }
             select.innerHTML = options;
         }
 
-        // RENDER SPERRKONTO TRACKER DYNAMICALLY
         function renderSperrkontoTracker() {
+            if (!userSettings) return;
             const startMonthStr = userSettings.sperrkonto_start || '2026-10';
             const totalMonths = Number(userSettings.sperrkonto_months) || 12;
 
@@ -1004,20 +867,29 @@
 
             document.getElementById('blocked-months-label').innerText = `Month ${currentMonthIndex} of ${totalMonths}`;
             document.getElementById('blocked-progress-bar').style.width = `${progressPct}%`;
-            document.getElementById('sperrkonto-start-lbl').innerText = `Started: ${startMonthStr}`;
+            document.getElementById('sperrkonto-start-lbl').innerText = `Start: ${startMonthStr}`;
             
             const endDate = new Date(startDate);
             endDate.setMonth(startDate.getMonth() + totalMonths - 1);
-            document.getElementById('sperrkonto-end-lbl').innerText = `Renewal: ${endDate.toISOString().slice(0, 7)}`;
+            document.getElementById('sperrkonto-end-lbl').innerText = `End: ${endDate.toISOString().slice(0, 7)}`;
         }
 
         function updateUI() {
+            if (!userSettings) return;
+
             const pool = Number(userSettings.monthly_budget) || 992;
-            const rent = Number(userSettings.rent_cost) || 0;
-            const health = Number(userSettings.health_ins_cost) || 0;
-            const gez = Number(userSettings.gez_cost) || 0;
-            const internet = Number(userSettings.internet_cost) || 0;
+            const rent = Number(userSettings.rent_cost) || 350;
+            const health = Number(userSettings.health_ins_cost) || 120;
+            const gez = Number(userSettings.gez_cost) || 18.36;
+            const internet = Number(userSettings.internet_cost) || 31.64;
             const totalFixed = rent + health + gez + internet;
+
+            // Render Bills Widget
+            document.getElementById('total-fixed-summary').innerText = `-€${totalFixed.toFixed(2)}`;
+            document.getElementById('bill-rent-val').innerText = `€${rent.toFixed(0)}`;
+            document.getElementById('bill-health-val').innerText = `€${health.toFixed(0)}`;
+            document.getElementById('bill-gez-val').innerText = `€${gez.toFixed(2)}`;
+            document.getElementById('bill-internet-val').innerText = `€${internet.toFixed(2)}`;
 
             const now = new Date();
             const currentMonth = now.getMonth();
@@ -1039,13 +911,9 @@
             const netAvailablePool = variablePool - totalSpentThisMonth;
             currentDailyLimit = remainingDays > 0 ? Math.max(0, netAvailablePool / remainingDays) : 0;
 
-            document.getElementById('math-pool').innerText = `€${pool.toFixed(2)}`;
-            document.getElementById('math-fixed').innerText = `-€${totalFixed.toFixed(2)}`;
-            document.getElementById('math-variable').innerText = `€${variablePool.toFixed(2)}`;
             document.getElementById('math-left-month').innerText = `€${Math.max(0, netAvailablePool).toFixed(2)}`;
-
             document.getElementById('daily-limit-display').innerText = `€${currentDailyLimit.toFixed(2)}`;
-            document.getElementById('spent-today-label').innerText = `Spent today: €${todaySpent.toFixed(2)}`;
+            document.getElementById('spent-today-label').innerText = `€${todaySpent.toFixed(2)}`;
             document.getElementById('days-remaining-label').innerText = `${remainingDays} days left`;
 
             const percentage = Math.min(100, (todaySpent / (currentDailyLimit || 1)) * 100);
@@ -1065,7 +933,6 @@
 
             renderSperrkontoTracker();
             renderTransactionsLists();
-            renderCategoryBreakdown(monthTxs);
             renderExpenseBarGraph(monthTxs, lastDayOfMonth);
             lucide.createIcons();
         }
@@ -1114,15 +981,12 @@
             document.getElementById('tx-count').innerText = `${filteredTxs.length} items`;
 
             if (filteredTxs.length === 0) {
-                txList.innerHTML = `<div class="text-slate-500 text-center py-6 text-xs bg-slate-900 border border-slate-800 rounded-2xl">No transactions found for this period.</div>`;
+                txList.innerHTML = `<div class="text-slate-500 text-center py-6 text-xs bg-slate-900 border border-slate-800 rounded-2xl">No transactions logged for this period.</div>`;
             } else {
                 txList.innerHTML = filteredTxs.map(t => `
                     <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs">
                         <div class="space-y-0.5">
-                            <div class="font-bold text-white flex items-center gap-1.5">
-                                ${t.description} 
-                                ${t.receipt_url ? `<a href="${t.receipt_url}" target="_blank" class="text-indigo-400 text-[10px] underline">[Receipt]</a>` : ''}
-                            </div>
+                            <div class="font-bold text-white">${t.description}</div>
                             <div class="text-[10px] text-slate-400">${t.date} • <span class="text-indigo-400">${t.category}</span> ${t.is_tax_deductible ? '• <span class="text-emerald-400 font-medium">🇩🇪 Tax</span>' : ''}</div>
                         </div>
                         <div class="flex items-center gap-2">
@@ -1151,24 +1015,6 @@
             lucide.createIcons();
         }
 
-        function renderCategoryBreakdown(monthTxs) {
-            const container = document.getElementById('category-breakdown-list');
-            if (monthTxs.length === 0) {
-                container.innerHTML = `<div class="text-slate-500 text-center py-2">No variable expenses logged yet.</div>`;
-                return;
-            }
-
-            const cats = {};
-            monthTxs.forEach(t => { cats[t.category] = (cats[t.category] || 0) + Number(t.amount); });
-
-            container.innerHTML = Object.entries(cats).map(([cat, amt]) => `
-                <div class="flex justify-between items-center text-slate-300 border-b border-slate-800/60 pb-1.5">
-                    <span>${cat}</span>
-                    <span class="font-bold text-indigo-400">€${amt.toFixed(2)}</span>
-                </div>
-            `).join('');
-        }
-
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById(`tab-${tabName}`).classList.remove('hidden');
@@ -1179,19 +1025,33 @@
             document.querySelector(`[data-target="tab-${tabName}"]`).className = "nav-btn flex flex-col items-center gap-1 text-indigo-400 py-1 px-3 transition";
         }
 
-        function openSettingsModal() {
-            document.getElementById('set-name').value = userSettings.full_name || '';
-            document.getElementById('set-home-tz').value = userSettings.home_tz || 'Asia/Dubai';
-            document.getElementById('set-pool').value = userSettings.monthly_budget || 992;
-            document.getElementById('set-rent').value = userSettings.rent_cost || 350;
-            document.getElementById('set-health').value = userSettings.health_ins_cost || 120;
-            document.getElementById('set-gez').value = userSettings.gez_cost || 18.36;
-            document.getElementById('set-internet').value = userSettings.internet_cost || 31.64;
-            document.getElementById('set-sperrkonto-start').value = userSettings.sperrkonto_start || '2026-10';
-            document.getElementById('set-sperrkonto-months').value = userSettings.sperrkonto_months || 12;
-            document.getElementById('set-theme').value = userSettings.theme_mode || 'dark';
+        function openSettingsModal(isOnboarding = false) {
+            if (isOnboarding) {
+                document.getElementById('settings-modal-title').innerText = "Welcome! Complete Setup";
+            } else {
+                document.getElementById('settings-modal-title').innerText = "Profile & Budget Setup";
+            }
+
+            if (userSettings) {
+                document.getElementById('set-name').value = userSettings.full_name || '';
+                document.getElementById('set-home-tz').value = userSettings.home_tz || 'Asia/Dubai';
+                document.getElementById('set-pool').value = userSettings.monthly_budget || 992;
+                document.getElementById('set-rent').value = userSettings.rent_cost || 350;
+                document.getElementById('set-health').value = userSettings.health_ins_cost || 120;
+                document.getElementById('set-gez').value = userSettings.gez_cost || 18.36;
+                document.getElementById('set-internet').value = userSettings.internet_cost || 31.64;
+                document.getElementById('set-sperrkonto-start').value = userSettings.sperrkonto_start || '2026-10';
+                document.getElementById('set-sperrkonto-months').value = userSettings.sperrkonto_months || 12;
+            } else {
+                document.getElementById('set-pool').value = 992;
+                document.getElementById('set-rent').value = 350;
+                document.getElementById('set-health').value = 120;
+                document.getElementById('set-gez').value = 18.36;
+                document.getElementById('set-internet').value = 31.64;
+                document.getElementById('set-sperrkonto-start').value = '2026-10';
+                document.getElementById('set-sperrkonto-months').value = 12;
+            }
             recalcFixedSum();
-            checkNotificationStatus();
             document.getElementById('settings-modal').classList.remove('hidden');
         }
 
@@ -1202,8 +1062,7 @@
             const health = parseFloat(document.getElementById('set-health').value) || 0;
             const gez = parseFloat(document.getElementById('set-gez').value) || 0;
             const internet = parseFloat(document.getElementById('set-internet').value) || 0;
-            const total = rent + health + gez + internet;
-            document.getElementById('set-total-fixed').innerText = `€${total.toFixed(2)}`;
+            document.getElementById('set-total-fixed').innerText = `€${(rent + health + gez + internet).toFixed(2)}`;
         }
 
         document.getElementById('settings-form').addEventListener('submit', async (e) => {
@@ -1217,37 +1076,48 @@
             const internet_cost = parseFloat(document.getElementById('set-internet').value) || 0;
             const sperrkonto_start = document.getElementById('set-sperrkonto-start').value;
             const sperrkonto_months = parseInt(document.getElementById('set-sperrkonto-months').value) || 12;
-            const theme_mode = document.getElementById('set-theme').value;
             const fixed_costs = rent_cost + health_ins_cost + gez_cost + internet_cost;
 
-            const updated = { full_name, home_tz, monthly_budget, fixed_costs, rent_cost, health_ins_cost, gez_cost, internet_cost, sperrkonto_start, sperrkonto_months, theme_mode };
+            const payload = { 
+                user_id: currentUser.id,
+                full_name, 
+                home_tz, 
+                monthly_budget, 
+                fixed_costs, 
+                rent_cost, 
+                health_ins_cost, 
+                gez_cost, 
+                internet_cost, 
+                sperrkonto_start, 
+                sperrkonto_months 
+            };
 
-            const { error } = await supabaseClient.from('settings').update(updated).eq('user_id', currentUser.id);
+            let error = null;
+            if (userSettings) {
+                const res = await supabaseClient.from('settings').update(payload).eq('user_id', currentUser.id);
+                error = res.error;
+            } else {
+                const res = await supabaseClient.from('settings').insert([payload]);
+                error = res.error;
+            }
+
             if (!error) {
-                userSettings = { ...userSettings, ...updated };
-                applyTheme(theme_mode);
+                userSettings = payload;
+                document.getElementById('settings-close-btn').classList.remove('hidden');
                 closeSettingsModal();
                 loadUserData();
+            } else {
+                alert('Error saving settings: ' + error.message);
             }
         });
 
-        function applyTheme(mode) {
-            const body = document.getElementById('app-body');
-            if (mode === 'light') {
-                body.className = "h-full text-slate-900 flex flex-col font-sans select-none antialiased bg-slate-100";
-            } else {
-                body.className = "h-full text-slate-100 flex flex-col font-sans select-none antialiased bg-slate-950";
-            }
-        }
-
         function exportTaxCSV() {
             const taxTxs = transactions.filter(t => t.is_tax_deductible);
-            if (taxTxs.length === 0) { alert('No tax deductible expenses found to export.'); return; }
-            let csvContent = "data:text/csv;charset=utf-8,Date,Category,Description,Amount (EUR)\n";
+            if (taxTxs.length === 0) { alert('No tax deductible expenses found.'); return; }
+            let csvContent = "data:text/csv;charset=utf-8,Date,Category,Note,Amount (EUR)\n";
             taxTxs.forEach(t => { csvContent += `${t.date},${t.category},"${t.description}",${t.amount}\n`; });
-            const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
+            link.setAttribute("href", encodeURI(csvContent));
             link.setAttribute("download", "Finanzamt_Tax_Deductions.csv");
             document.body.appendChild(link);
             link.click();
