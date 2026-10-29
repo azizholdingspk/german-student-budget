@@ -41,7 +41,7 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="h-full text-slate-100 flex flex-col font-sans select-none antialiased bg-slate-950">
+<body id="app-body" class="h-full text-slate-100 flex flex-col font-sans select-none antialiased bg-slate-950">
 
     <!-- AUTHENTICATION SCREEN -->
     <div id="auth-screen" class="flex-1 flex flex-col justify-center items-center p-6 max-w-md w-full mx-auto">
@@ -151,15 +151,54 @@
                     </div>
                 </div>
 
+                <!-- Sperrkonto (Blocked Account) Milestone Tracker -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-2">
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold text-white flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-indigo-400"></i> Sperrkonto Block Progress</span>
+                        <span id="blocked-months-label" class="text-indigo-400 font-semibold">Month 3 of 12</span>
+                    </div>
+                    <div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
+                        <div id="blocked-progress-bar" class="bg-indigo-500 h-full rounded-full" style="width: 25%"></div>
+                    </div>
+                    <div class="flex justify-between text-[10px] text-slate-500">
+                        <span>Started: Oct 2026</span>
+                        <span>Renewal: Sep 2027</span>
+                    </div>
+                </div>
+
+                <!-- Currency Converter Widget -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                        <i data-lucide="repeat" class="w-4 h-4 text-indigo-400"></i> Currency Converter
+                    </h3>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                            <label class="block text-[10px] text-slate-400 uppercase mb-1">Amount (EUR)</label>
+                            <input type="number" id="conv-eur" value="100" oninput="convertCurrency()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-slate-400 uppercase mb-1">Target Currency</label>
+                            <select id="conv-target" onchange="convertCurrency()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500">
+                                <option value="USD">USD ($)</option>
+                                <option value="GBP">GBP (£)</option>
+                                <option value="INR">INR (₹)</option>
+                                <option value="PKR">PKR (Rs)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex justify-between items-center text-xs">
+                        <span class="text-slate-400">Converted Value:</span>
+                        <span id="conv-result" class="font-extrabold text-emerald-400 text-sm">$108.00 USD</span>
+                    </div>
+                </div>
+
                 <!-- Monthly Spending Graph Widget -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300">📈 Monthly Expense Trends</h3>
                         <span id="graph-month-label" class="text-[10px] text-indigo-400 font-medium">This Month</span>
                     </div>
-                    <div id="expense-bar-graph" class="h-32 flex items-end gap-1 pt-4 pb-1 px-1 border-b border-slate-800">
-                        <!-- Dynamically populated vertical bars -->
-                    </div>
+                    <div id="expense-bar-graph" class="h-32 flex items-end gap-1 pt-4 pb-1 px-1 border-b border-slate-800"></div>
                     <div class="flex justify-between text-[10px] text-slate-500 px-1">
                         <span>Day 1</span>
                         <span>Mid Month</span>
@@ -213,7 +252,7 @@
                     </div>
                 </div>
 
-                <!-- Quick Expense Logging Form Card (With Back-dating Support) -->
+                <!-- Quick Expense Logging Form Card (With Receipt Upload) -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
                     <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-1.5">
                         <i data-lucide="plus-circle" class="w-4 h-4 text-indigo-400"></i> Log New Expense
@@ -241,9 +280,14 @@
                                 <input type="text" id="exp-desc" required placeholder="e.g. Rewe, DB..." oninput="autoDetectTax(this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
                             </div>
                             <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Date (Back-date)</label>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Date</label>
                                 <input type="date" id="exp-date" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                             </div>
+                        </div>
+                        <!-- Receipt File Attachment -->
+                        <div>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Attach Receipt (Optional)</label>
+                            <input type="file" id="exp-receipt" accept="image/*" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500">
                         </div>
                         <div class="flex items-center justify-between pt-1 bg-slate-950/50 p-2.5 rounded-xl border border-slate-800">
                             <div class="flex items-center gap-2">
@@ -278,9 +322,7 @@
                         <label id="filter-value-label" class="block text-[10px] text-slate-400 uppercase mb-1 font-bold">Select Month</label>
                         <input type="month" id="filter-input-month" onchange="renderTransactionsLists()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-white focus:outline-none focus:border-indigo-500">
                         <input type="date" id="filter-input-day" onchange="renderTransactionsLists()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-white focus:outline-none focus:border-indigo-500 hidden">
-                        <select id="filter-input-week" onchange="renderTransactionsLists()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-white focus:outline-none focus:border-indigo-500 hidden">
-                            <!-- Populated dynamically -->
-                        </select>
+                        <select id="filter-input-week" onchange="renderTransactionsLists()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-white focus:outline-none focus:border-indigo-500 hidden"></select>
                     </div>
                 </div>
 
@@ -405,6 +447,40 @@
                     </div>
                 </div>
 
+                <!-- Theme & Accent Customizer -->
+                <div class="space-y-2 border-b border-slate-800 pb-3">
+                    <span class="text-[10px] uppercase font-bold text-indigo-400">Appearance & Accent</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Theme Mode</label>
+                            <select id="set-theme" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                                <option value="dark">Dark Slate 🌙</option>
+                                <option value="light">Light Clean ☀️</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Accent Style</label>
+                            <select id="set-accent" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                                <option value="indigo">Indigo / Blue</option>
+                                <option value="emerald">Emerald Green</option>
+                                <option value="amber">Warm Amber</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Push Notifications Toggle -->
+                <div class="space-y-2 border-b border-slate-800 pb-3">
+                    <span class="text-[10px] uppercase font-bold text-indigo-400">Notifications</span>
+                    <div class="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                        <div>
+                            <span class="text-xs font-bold text-white block">Morning Budget Notification</span>
+                            <span class="text-[10px] text-slate-400">Send daily allowance alert</span>
+                        </div>
+                        <button type="button" onclick="requestNotificationPermission()" id="notif-toggle-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition">Enable</button>
+                    </div>
+                </div>
+
                 <div class="space-y-2">
                     <span class="text-[10px] uppercase font-bold text-indigo-400">Monthly Budget & Fixed Breakdown</span>
                     <div>
@@ -448,7 +524,7 @@
     <!-- APP LOGIC -->
     <script>
         const SUPABASE_URL = "https://dqtfdijjdrilqfxzazxm.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxdGZkaWpqZHJpbHFmeHphenhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyNzE0NjgsImV4cCI6MjEwODg0NzQ2OH0.JiIikYi1qqbIaaDOMD3UREBI9hewADW4P0siH-UuQmw";
+        const SUPABASE_ANON_KEY = "sb_publishable_aFd__E0qhjpGVjP_cE6DOA_eKXDELB-";
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
             auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
@@ -463,7 +539,8 @@
             rent_cost: 350,
             health_ins_cost: 120,
             gez_cost: 18.36,
-            internet_cost: 31.64
+            internet_cost: 31.64,
+            theme_mode: 'dark'
         };
         let transactions = [];
         let currentDailyLimit = 0;
@@ -474,7 +551,6 @@
             setupAuthListeners();
             calcDeadlineCountdown();
             
-            // Set default date input value to today for back-dating support
             const todayStr = new Date().toISOString().split('T')[0];
             document.getElementById('exp-date').value = todayStr;
             document.getElementById('filter-input-month').value = todayStr.substring(0, 7);
@@ -493,7 +569,20 @@
             document.getElementById('current-date-label').innerText = new Date().toLocaleDateString('en-US', options) + ' • ' + Intl.DateTimeFormat().resolvedOptions().timeZone;
             
             fetchLocationAndExternalData();
+            checkNotificationStatus();
+            convertCurrency();
         });
+
+        // CURRENCY CONVERTER RATES
+        const exchangeRates = { USD: 1.08, GBP: 0.85, INR: 91.50, PKR: 301.20 };
+        function convertCurrency() {
+            const eur = parseFloat(document.getElementById('conv-eur').value) || 0;
+            const target = document.getElementById('conv-target').value;
+            const rate = exchangeRates[target] || 1;
+            const res = eur * rate;
+            const symbols = { USD: '$', GBP: '£', INR: '₹', PKR: 'Rs ' };
+            document.getElementById('conv-result').innerText = `${symbols[target]}${res.toFixed(2)} ${target}`;
+        }
 
         async function fetchLocationAndExternalData() {
             if (navigator.geolocation) {
@@ -503,7 +592,6 @@
                     fetchWeather(lat, lon);
                     fetchPrayerTimes(lat, lon);
                 }, () => {
-                    // Fallback to Berlin coordinates if geolocation fails
                     fetchWeather(52.52, 13.405);
                     fetchPrayerTimes(52.52, 13.405);
                 });
@@ -587,6 +675,34 @@
 
         function openPrayerModal() { document.getElementById('prayer-modal').classList.remove('hidden'); }
         function closePrayerModal() { document.getElementById('prayer-modal').classList.add('hidden'); }
+
+        // NOTIFICATIONS
+        function checkNotificationStatus() {
+            const btn = document.getElementById('notif-toggle-btn');
+            if (!("Notification" in window)) {
+                btn.innerText = "Not Supported";
+                return;
+            }
+            if (Notification.permission === "granted") {
+                btn.innerText = "Enabled ✓";
+                btn.className = "bg-emerald-600 text-white text-xs font-medium px-3 py-1.5 rounded-lg";
+            } else if (Notification.permission === "denied") {
+                btn.innerText = "Blocked ✕";
+                btn.className = "bg-rose-600 text-white text-xs font-medium px-3 py-1.5 rounded-lg";
+            }
+        }
+
+        async function requestNotificationPermission() {
+            if (!("Notification" in window)) return;
+            const permission = await Notification.requestPermission();
+            checkNotificationStatus();
+            if (permission === "granted") {
+                new Notification("🇩🇪 FinanzCampus Morning Briefing", {
+                    body: `Today's Dynamic Allowance: €${currentDailyLimit.toFixed(2)}. Have a blessed day!`,
+                    icon: "/App%20Assets/German%20App%20Logo.png"
+                });
+            }
+        }
 
         function calcDeadlineCountdown() {
             const now = new Date();
@@ -719,6 +835,18 @@
             const description = document.getElementById('exp-desc').value;
             const date = document.getElementById('exp-date').value;
             const isTaxDeductible = document.getElementById('exp-tax').checked;
+            const fileInput = document.getElementById('exp-receipt');
+            
+            let receiptUrl = null;
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const filePath = `${currentUser.id}/${Date.now()}_${file.name}`;
+                const { data: uploadData, error: uploadError } = await supabaseClient.storage.from('receipts').upload(filePath, file);
+                if (!uploadError) {
+                    const { data: { publicUrl } } = supabaseClient.storage.from('receipts').getPublicUrl(filePath);
+                    receiptUrl = publicUrl;
+                }
+            }
 
             const newTx = {
                 user_id: currentUser.id,
@@ -726,7 +854,8 @@
                 amount,
                 category,
                 description,
-                is_tax_deductible: isTaxDeductible
+                is_tax_deductible: isTaxDeductible,
+                receipt_url: receiptUrl
             };
 
             const { data, error } = await supabaseClient.from('transactions').insert([newTx]).select();
@@ -735,6 +864,16 @@
                 document.getElementById('expense-form').reset();
                 document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
                 updateUI();
+            } else if (error) {
+                // Fallback if receipts bucket hasn't been created yet in Supabase
+                delete newTx.receipt_url;
+                const { data: fallbackData, error: fallbackErr } = await supabaseClient.from('transactions').insert([newTx]).select();
+                if (!fallbackErr && fallbackData) {
+                    transactions.unshift(fallbackData[0]);
+                    document.getElementById('expense-form').reset();
+                    document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
+                    updateUI();
+                }
             }
         });
 
@@ -758,9 +897,7 @@
             document.getElementById('edit-modal').classList.remove('hidden');
         }
 
-        function closeEditModal() {
-            document.getElementById('edit-modal').classList.add('hidden');
-        }
+        function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
 
         document.getElementById('edit-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -779,8 +916,6 @@
                 if (idx !== -1) transactions[idx] = { ...transactions[idx], ...updated };
                 closeEditModal();
                 updateUI();
-            } else {
-                alert('Error updating transaction: ' + error.message);
             }
         });
 
@@ -795,17 +930,9 @@
             dInput.classList.add('hidden');
             wInput.classList.add('hidden');
 
-            if (mode === 'month') {
-                label.innerText = 'Select Month';
-                mInput.classList.remove('hidden');
-            } else if (mode === 'day') {
-                label.innerText = 'Select Day';
-                dInput.classList.remove('hidden');
-            } else if (mode === 'week') {
-                label.innerText = 'Select Week';
-                wInput.classList.remove('hidden');
-                populateWeekDropdown();
-            }
+            if (mode === 'month') { label.innerText = 'Select Month'; mInput.classList.remove('hidden'); }
+            else if (mode === 'day') { label.innerText = 'Select Day'; dInput.classList.remove('hidden'); }
+            else if (mode === 'week') { label.innerText = 'Select Week'; wInput.classList.remove('hidden'); populateWeekDropdown(); }
             renderTransactionsLists();
         }
 
@@ -889,13 +1016,10 @@
             monthTxs.forEach(t => {
                 const d = new Date(t.date);
                 const dayNum = d.getDate();
-                if (dayNum >= 1 && dayNum <= totalDays) {
-                    dailyTotals[dayNum - 1] += Number(t.amount);
-                }
+                if (dayNum >= 1 && dayNum <= totalDays) dailyTotals[dayNum - 1] += Number(t.amount);
             });
 
-            const maxAmt = Math.max(...dailyTotals, 20); // Prevent divide by zero
-
+            const maxAmt = Math.max(...dailyTotals, 20);
             graphContainer.innerHTML = dailyTotals.map((amt, idx) => {
                 const heightPct = Math.min(100, Math.max(4, (amt / maxAmt) * 100));
                 const colorClass = amt > 0 ? 'bg-indigo-500 hover:bg-indigo-400' : 'bg-slate-800/40';
@@ -909,22 +1033,17 @@
         function renderTransactionsLists() {
             const txList = document.getElementById('transactions-list');
             const taxList = document.getElementById('tax-transactions-list');
-
             const mode = document.getElementById('filter-mode').value;
             let filteredTxs = transactions;
 
             if (mode === 'month') {
-                const val = document.getElementById('filter-input-month').value; // e.g. "2026-10"
-                if (val) {
-                    filteredTxs = transactions.filter(t => t.date.startsWith(val));
-                }
+                const val = document.getElementById('filter-input-month').value;
+                if (val) filteredTxs = transactions.filter(t => t.date.startsWith(val));
             } else if (mode === 'day') {
                 const val = document.getElementById('filter-input-day').value;
-                if (val) {
-                    filteredTxs = transactions.filter(t => t.date === val);
-                }
+                if (val) filteredTxs = transactions.filter(t => t.date === val);
             } else if (mode === 'week') {
-                const val = document.getElementById('filter-input-week').value; // "YYYY-MM-DD_YYYY-MM-DD"
+                const val = document.getElementById('filter-input-week').value;
                 if (val) {
                     const [start, end] = val.split('_');
                     filteredTxs = transactions.filter(t => t.date >= start && t.date <= end);
@@ -939,7 +1058,10 @@
                 txList.innerHTML = filteredTxs.map(t => `
                     <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs">
                         <div class="space-y-0.5">
-                            <div class="font-bold text-white">${t.description}</div>
+                            <div class="font-bold text-white flex items-center gap-1.5">
+                                ${t.description} 
+                                ${t.receipt_url ? `<a href="${t.receipt_url}" target="_blank" class="text-indigo-400 text-[10px] underline">[Receipt]</a>` : ''}
+                            </div>
                             <div class="text-[10px] text-slate-400">${t.date} • <span class="text-indigo-400">${t.category}</span> ${t.is_tax_deductible ? '• <span class="text-emerald-400 font-medium">🇩🇪 Tax</span>' : ''}</div>
                         </div>
                         <div class="flex items-center gap-2">
@@ -976,9 +1098,7 @@
             }
 
             const cats = {};
-            monthTxs.forEach(t => {
-                cats[t.category] = (cats[t.category] || 0) + Number(t.amount);
-            });
+            monthTxs.forEach(t => { cats[t.category] = (cats[t.category] || 0) + Number(t.amount); });
 
             container.innerHTML = Object.entries(cats).map(([cat, amt]) => `
                 <div class="flex justify-between items-center text-slate-300 border-b border-slate-800/60 pb-1.5">
@@ -1005,13 +1125,13 @@
             document.getElementById('set-health').value = userSettings.health_ins_cost || 120;
             document.getElementById('set-gez').value = userSettings.gez_cost || 18.36;
             document.getElementById('set-internet').value = userSettings.internet_cost || 31.64;
+            document.getElementById('set-theme').value = userSettings.theme_mode || 'dark';
             recalcFixedSum();
+            checkNotificationStatus();
             document.getElementById('settings-modal').classList.remove('hidden');
         }
 
-        function closeSettingsModal() {
-            document.getElementById('settings-modal').classList.add('hidden');
-        }
+        function closeSettingsModal() { document.getElementById('settings-modal').classList.add('hidden'); }
 
         function recalcFixedSum() {
             const rent = parseFloat(document.getElementById('set-rent').value) || 0;
@@ -1030,38 +1150,34 @@
             const health_ins_cost = parseFloat(document.getElementById('set-health').value) || 0;
             const gez_cost = parseFloat(document.getElementById('set-gez').value) || 0;
             const internet_cost = parseFloat(document.getElementById('set-internet').value) || 0;
+            const theme_mode = document.getElementById('set-theme').value;
             const fixed_costs = rent_cost + health_ins_cost + gez_cost + internet_cost;
 
-            const updated = {
-                full_name,
-                monthly_budget,
-                fixed_costs,
-                rent_cost,
-                health_ins_cost,
-                gez_cost,
-                internet_cost
-            };
+            const updated = { full_name, monthly_budget, fixed_costs, rent_cost, health_ins_cost, gez_cost, internet_cost, theme_mode };
 
             const { error } = await supabaseClient.from('settings').update(updated).eq('user_id', currentUser.id);
             if (!error) {
                 userSettings = { ...userSettings, ...updated };
+                applyTheme(theme_mode);
                 closeSettingsModal();
                 loadUserData();
-            } else {
-                alert('Error updating settings: ' + error.message);
             }
         });
 
+        function applyTheme(mode) {
+            const body = document.getElementById('app-body');
+            if (mode === 'light') {
+                body.className = "h-full text-slate-900 flex flex-col font-sans select-none antialiased bg-slate-100";
+            } else {
+                body.className = "h-full text-slate-100 flex flex-col font-sans select-none antialiased bg-slate-950";
+            }
+        }
+
         function exportTaxCSV() {
             const taxTxs = transactions.filter(t => t.is_tax_deductible);
-            if (taxTxs.length === 0) {
-                alert('No tax deductible expenses found to export.');
-                return;
-            }
+            if (taxTxs.length === 0) { alert('No tax deductible expenses found to export.'); return; }
             let csvContent = "data:text/csv;charset=utf-8,Date,Category,Description,Amount (EUR)\n";
-            taxTxs.forEach(t => {
-                csvContent += `${t.date},${t.category},"${t.description}",${t.amount}\n`;
-            });
+            taxTxs.forEach(t => { csvContent += `${t.date},${t.category},"${t.description}",${t.amount}\n`; });
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
