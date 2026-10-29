@@ -66,7 +66,7 @@
                     <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
                 </div>
                 <div class="flex gap-2 pt-2">
-                    <button type="button" id="btn-login" class="flex-1 theme-accent-btn bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition text-sm shadow-lg">Sign In</button>
+                    <button type="button" id="btn-login" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition text-sm shadow-lg shadow-indigo-600/20">Sign In</button>
                     <button type="button" id="btn-signup" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium py-3 rounded-xl transition text-sm">Sign Up</button>
                 </div>
             </form>
@@ -84,9 +84,9 @@
                 </h1>
                 <!-- Dual Time Zones -->
                 <div class="flex items-center gap-2 text-[10px] text-slate-400 mt-0.5 font-medium">
-                    <span id="time-germany" class="theme-accent-txt text-indigo-400 font-semibold">🇩🇪 DE: --:--</span>
+                    <span id="time-germany" class="text-indigo-400 font-semibold">🇩🇪 --:--</span>
                     <span>•</span>
-                    <span id="time-home">🇦🇪 UAE: --:--</span>
+                    <span id="time-home">🏠 --:--</span>
                 </div>
             </div>
             <div class="flex items-center gap-2">
@@ -121,12 +121,12 @@
                     <!-- Prayer Times Mini Card -->
                     <div onclick="openPrayerModal()" class="bg-slate-900 border border-slate-800 rounded-2xl p-3 flex items-center justify-between shadow-md cursor-pointer hover:border-indigo-500/50 transition">
                         <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 theme-accent-icon-bg bg-indigo-600/10 border border-indigo-500/20 rounded-xl flex items-center justify-center theme-accent-txt text-indigo-400">
+                            <div class="w-8 h-8 bg-indigo-600/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400">
                                 <i data-lucide="moon" class="w-4 h-4"></i>
                             </div>
                             <div>
                                 <span class="text-xs font-bold text-white block">Prayer Times</span>
-                                <span id="next-prayer-label" class="text-[10px] theme-accent-txt text-indigo-400">Loading...</span>
+                                <span id="next-prayer-label" class="text-[10px] text-indigo-400">Loading...</span>
                             </div>
                         </div>
                         <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
@@ -159,11 +159,11 @@
                 <!-- Editable Sperrkonto (Blocked Account) Milestone Tracker -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-2">
                     <div class="flex justify-between items-center text-xs">
-                        <span class="font-bold text-white flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 theme-accent-txt text-indigo-400"></i> Sperrkonto Block Progress</span>
-                        <span id="blocked-months-label" class="theme-accent-txt text-indigo-400 font-semibold">Month -- of --</span>
+                        <span class="font-bold text-white flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-indigo-400"></i> Sperrkonto Block Progress</span>
+                        <span id="blocked-months-label" class="text-indigo-400 font-semibold">Month -- of --</span>
                     </div>
                     <div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
-                        <div id="blocked-progress-bar" class="theme-accent-bg bg-indigo-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                        <div id="blocked-progress-bar" class="bg-indigo-500 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
                     </div>
                     <div class="flex justify-between text-[10px] text-slate-500">
                         <span id="sperrkonto-start-lbl">Started: --</span>
@@ -171,10 +171,10 @@
                     </div>
                 </div>
 
-                <!-- Currency Converter Widget -->
+                <!-- Currency Converter Widget (Includes AED) -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
                     <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                        <i data-lucide="repeat" class="w-4 h-4 theme-accent-txt text-indigo-400"></i> Currency Converter
+                        <i data-lucide="repeat" class="w-4 h-4 text-indigo-400"></i> Currency Converter
                     </h3>
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <div>
@@ -202,7 +202,7 @@
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300">📈 Monthly Expense Trends</h3>
-                        <span id="graph-month-label" class="text-[10px] theme-accent-txt text-indigo-400 font-medium">This Month</span>
+                        <span id="graph-month-label" class="text-[10px] text-indigo-400 font-medium">This Month</span>
                     </div>
                     <div id="expense-bar-graph" class="h-32 flex items-end gap-1 pt-4 pb-1 px-1 border-b border-slate-800"></div>
                     <div class="flex justify-between text-[10px] text-slate-500 px-1">
@@ -215,7 +215,7 @@
                 <!-- Semester & Visa Deadlines Widget -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 theme-accent-icon-bg bg-indigo-600/10 border border-indigo-500/20 rounded-xl flex items-center justify-center theme-accent-txt text-indigo-400">
+                        <div class="w-10 h-10 bg-indigo-600/10 border border-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400">
                             <i data-lucide="calendar-clock" class="w-5 h-5"></i>
                         </div>
                         <div>
@@ -223,14 +223,14 @@
                             <span id="deadline-countdown" class="text-[10px] text-slate-400">Semesterbeitrag & Visa Check</span>
                         </div>
                     </div>
-                    <span id="deadline-badge" class="text-xs font-bold theme-accent-icon-bg bg-indigo-500/10 theme-accent-txt text-indigo-400 px-2.5 py-1 rounded-lg border border-indigo-500/20">- Days</span>
+                    <span id="deadline-badge" class="text-xs font-bold bg-indigo-500/10 text-indigo-400 px-2.5 py-1 rounded-lg border border-indigo-500/20">- Days</span>
                 </div>
 
                 <!-- Explicit Math Breakdown Widget -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-2 text-xs">
                     <div class="font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center justify-between">
                         <span>🧮 Monthly Math Breakdown</span>
-                        <span class="theme-accent-txt text-indigo-400 font-medium">Auto-Calculated</span>
+                        <span class="text-indigo-400 font-medium">Auto-Calculated</span>
                     </div>
                     <div class="flex justify-between text-slate-400 border-b border-slate-800/60 pb-1.5">
                         <span>Monthly Pool (Sperrkonto / BAföG)</span>
@@ -242,7 +242,7 @@
                     </div>
                     <div class="flex justify-between text-slate-400 border-b border-slate-800/60 pb-1.5 font-medium">
                         <span>Variable Pool Left for Month</span>
-                        <span id="math-variable" class="font-bold theme-accent-txt text-indigo-400">€542.00</span>
+                        <span id="math-variable" class="font-bold text-indigo-400">€542.00</span>
                     </div>
                     <div class="flex justify-between text-slate-300 pt-1">
                         <span>Total Left for Month (After Expenses)</span>
@@ -258,10 +258,10 @@
                     </div>
                 </div>
 
-                <!-- Quick Expense Logging Form Card -->
+                <!-- Quick Expense Logging Form Card (With Receipt Photo Upload) -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
                     <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-1.5">
-                        <i data-lucide="plus-circle" class="w-4 h-4 theme-accent-txt text-indigo-400"></i> Log New Expense
+                        <i data-lucide="plus-circle" class="w-4 h-4 text-indigo-400"></i> Log New Expense
                     </h3>
                     <form id="expense-form" class="space-y-3">
                         <div class="grid grid-cols-2 gap-3">
@@ -292,16 +292,16 @@
                         </div>
                         <div>
                             <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Attach Receipt Photo (Optional)</label>
-                            <input type="file" id="exp-receipt" accept="image/*" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold theme-accent-btn file:bg-indigo-600 file:text-white">
+                            <input type="file" id="exp-receipt" accept="image/*" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500">
                         </div>
                         <div class="flex items-center justify-between pt-1 bg-slate-950/50 p-2.5 rounded-xl border border-slate-800">
                             <div class="flex items-center gap-2">
-                                <i data-lucide="landmark" class="w-4 h-4 theme-accent-txt text-indigo-400"></i>
+                                <i data-lucide="landmark" class="w-4 h-4 text-indigo-400"></i>
                                 <span class="text-xs font-medium text-slate-300">Tax Deductible 🇩🇪</span>
                             </div>
                             <input type="checkbox" id="exp-tax" class="w-4 h-4 accent-indigo-600 rounded bg-slate-950 border-slate-800">
                         </div>
-                        <button type="submit" class="w-full theme-accent-btn bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition text-sm shadow-lg">Add Expense</button>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition text-sm shadow-lg shadow-indigo-600/20">Add Expense</button>
                     </form>
                 </div>
             </section>
@@ -342,9 +342,9 @@
                         <h2 class="text-sm font-bold text-white">Finanzamt Tax Return</h2>
                     </div>
                     <p class="text-xs text-slate-400 leading-relaxed mb-3">
-                        Track study-related expenses (<span class="theme-accent-txt text-indigo-400 font-medium">Werbungskosten / Sonderausgaben</span>). Build a tax loss carryforward (<span class="theme-accent-txt text-indigo-400 font-medium">Verlustvortrag</span>) for your future post-grad salary.
+                        Track study-related expenses (<span class="text-indigo-400 font-medium">Werbungskosten / Sonderausgaben</span>). Build a tax loss carryforward (<span class="text-indigo-400 font-medium">Verlustvortrag</span>) for your future post-grad salary.
                     </p>
-                    <button onclick="exportTaxCSV()" class="w-full theme-accent-btn bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-2 shadow-lg">
+                    <button onclick="exportTaxCSV()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/20">
                         <i data-lucide="download" class="w-4 h-4"></i> Export Tax Deductions (.CSV)
                     </button>
                 </div>
@@ -355,7 +355,7 @@
 
         <!-- BOTTOM NAVIGATION BAR -->
         <nav class="absolute bottom-0 left-0 right-0 bg-slate-900/90 backdrop-blur-lg border-t border-slate-800/80 px-4 py-2 flex justify-around items-center z-30">
-            <button onclick="switchTab('dashboard')" class="nav-btn flex flex-col items-center gap-1 theme-accent-txt text-indigo-400 py-1 px-3 transition" data-target="tab-dashboard">
+            <button onclick="switchTab('dashboard')" class="nav-btn flex flex-col items-center gap-1 text-indigo-400 py-1 px-3 transition" data-target="tab-dashboard">
                 <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
                 <span class="text-[10px] font-medium">Dashboard</span>
             </button>
@@ -424,7 +424,7 @@
                     <span class="text-xs font-medium text-slate-300">Tax Deductible 🇩🇪</span>
                     <input type="checkbox" id="edit-tax" class="w-4 h-4 accent-indigo-600 rounded bg-slate-950 border-slate-800">
                 </div>
-                <button type="submit" class="w-full theme-accent-btn bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition text-xs shadow-lg">Save Changes</button>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition text-xs shadow-lg">Save Changes</button>
             </form>
         </div>
     </div>
@@ -439,14 +439,14 @@
             
             <form id="settings-form" class="space-y-3">
                 <div class="space-y-2 border-b border-slate-800 pb-3">
-                    <span class="text-[10px] uppercase font-bold theme-accent-txt text-indigo-400">Student Profile</span>
+                    <span class="text-[10px] uppercase font-bold text-indigo-400">Student Profile</span>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Full Name</label>
                             <input type="text" id="set-name" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Home Time Zone</label>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Home Country / Time Zone</label>
                             <select id="set-home-tz" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
                                 <option value="Asia/Dubai">🇦🇪 UAE (GST)</option>
                                 <option value="Asia/Karachi">🇵🇰 Pakistan (PKT)</option>
@@ -457,32 +457,9 @@
                     </div>
                 </div>
 
-                <!-- Theme & Accent Color Customizer -->
-                <div class="space-y-2 border-b border-slate-800 pb-3">
-                    <span class="text-[10px] uppercase font-bold theme-accent-txt text-indigo-400">Appearance & Accents</span>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Theme Mode</label>
-                            <select id="set-theme" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                                <option value="dark">Dark Slate 🌙</option>
-                                <option value="light">Light Clean ☀️</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Accent Color</label>
-                            <select id="set-accent" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                                <option value="indigo">Indigo 💙</option>
-                                <option value="emerald">Emerald 💚</option>
-                                <option value="amber">Amber 💛</option>
-                                <option value="rose">Rose ❤️</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Sperrkonto Tracker Settings -->
                 <div class="space-y-2 border-b border-slate-800 pb-3">
-                    <span class="text-[10px] uppercase font-bold theme-accent-txt text-indigo-400">Sperrkonto Config</span>
+                    <span class="text-[10px] uppercase font-bold text-indigo-400">Sperrkonto (Blocked Account) Config</span>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Start Month</label>
@@ -495,20 +472,31 @@
                     </div>
                 </div>
 
+                <!-- Theme Customizer -->
+                <div class="space-y-2 border-b border-slate-800 pb-3">
+                    <span class="text-[10px] uppercase font-bold text-indigo-400">Appearance Mode</span>
+                    <div>
+                        <select id="set-theme" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            <option value="dark">Dark Slate 🌙</option>
+                            <option value="light">Light Clean ☀️</option>
+                        </select>
+                    </div>
+                </div>
+
                 <!-- Notifications -->
                 <div class="space-y-2 border-b border-slate-800 pb-3">
-                    <span class="text-[10px] uppercase font-bold theme-accent-txt text-indigo-400">Notifications</span>
+                    <span class="text-[10px] uppercase font-bold text-indigo-400">Notifications</span>
                     <div class="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800">
                         <div>
-                            <span class="text-xs font-bold text-white block">Morning Briefing</span>
-                            <span class="text-[10px] text-slate-400">Daily allowance push alert</span>
+                            <span class="text-xs font-bold text-white block">Morning Budget Briefing</span>
+                            <span class="text-[10px] text-slate-400">Alert daily allowance</span>
                         </div>
-                        <button type="button" onclick="requestNotificationPermission()" id="notif-toggle-btn" class="theme-accent-btn bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition">Enable</button>
+                        <button type="button" onclick="requestNotificationPermission()" id="notif-toggle-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition">Enable</button>
                     </div>
                 </div>
 
                 <div class="space-y-2">
-                    <span class="text-[10px] uppercase font-bold theme-accent-txt text-indigo-400">Monthly Budget & Fixed Breakdown</span>
+                    <span class="text-[10px] uppercase font-bold text-indigo-400">Monthly Budget & Fixed Breakdown</span>
                     <div>
                         <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Monthly Pool (€)</label>
                         <input type="number" step="0.01" id="set-pool" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
@@ -542,7 +530,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="w-full theme-accent-btn bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition text-xs shadow-lg">Save Profile & Budget</button>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition text-xs shadow-lg">Save Profile & Budget</button>
             </form>
         </div>
     </div>
@@ -568,8 +556,7 @@
             internet_cost: 31.64,
             sperrkonto_start: '2026-10',
             sperrkonto_months: 12,
-            theme_mode: 'dark',
-            accent_style: 'indigo'
+            theme_mode: 'dark'
         };
         let transactions = [];
         let currentDailyLimit = 0;
@@ -599,21 +586,6 @@
             checkNotificationStatus();
             convertCurrency();
         });
-
-        // DYNAMIC ACCENT COLORS MAP
-        const accentStyles = {
-            indigo: { txt: 'text-indigo-400', bg: 'bg-indigo-500', btn: 'bg-indigo-600 hover:bg-indigo-500', iconBg: 'bg-indigo-600/10 border-indigo-500/20' },
-            emerald: { txt: 'text-emerald-400', bg: 'bg-emerald-500', btn: 'bg-emerald-600 hover:bg-emerald-500', iconBg: 'bg-emerald-600/10 border-emerald-500/20' },
-            amber: { txt: 'text-amber-400', bg: 'bg-amber-500', btn: 'bg-amber-600 hover:bg-amber-500', iconBg: 'bg-amber-600/10 border-amber-500/20' },
-            rose: { txt: 'text-rose-400', bg: 'bg-rose-500', btn: 'bg-rose-600 hover:bg-rose-500', iconBg: 'bg-rose-600/10 border-rose-500/20' }
-        };
-
-        function applyAccent(styleName) {
-            const style = accentStyles[styleName] || accentStyles.indigo;
-            document.querySelectorAll('.theme-accent-txt').forEach(el => el.className = el.className.replace(/text-(indigo|emerald|amber|rose)-400/g, style.txt));
-            document.querySelectorAll('.theme-accent-bg').forEach(el => el.className = el.className.replace(/bg-(indigo|emerald|amber|rose)-500/g, style.bg));
-            document.querySelectorAll('.theme-accent-btn').forEach(el => el.className = el.className.replace(/bg-(indigo|emerald|amber|rose)-600 hover:bg-(indigo|emerald|amber|rose)-500/g, style.btn));
-        }
 
         // DUAL TIME ZONES CLOCK
         function startDualClock() {
@@ -650,15 +622,17 @@
         async function fetchLocationAndExternalData() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(async (position) => {
-                    fetchWeather(position.coords.latitude, position.coords.longitude);
-                    fetchPrayerTimes(position.coords.latitude, position.coords.longitude);
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    fetchWeather(lat, lon);
+                    fetchPrayerTimes(lat, lon);
                 }, () => {
-                    fetchWeather(25.2048, 55.2708);
-                    fetchPrayerTimes(25.2048, 55.2708);
+                    fetchWeather(52.52, 13.405);
+                    fetchPrayerTimes(52.52, 13.405);
                 });
             } else {
-                fetchWeather(25.2048, 55.2708);
-                fetchPrayerTimes(25.2048, 55.2708);
+                fetchWeather(52.52, 13.405);
+                fetchPrayerTimes(52.52, 13.405);
             }
         }
 
@@ -676,7 +650,7 @@
             }
         }
 
-        function getWeatherCondition(code) {
+        function getWeatherCodeDescription(code) {
             if (code === 0) return "Clear sky ☀️";
             if (code <= 3) return "Partly cloudy 🌤️";
             if (code <= 48) return "Foggy 🌫️";
@@ -684,12 +658,12 @@
             if (code <= 77) return "Snowy ❄️";
             return "Fair ⛅";
         }
+        const getWeatherCondition = getWeatherCodeDescription;
 
-        async function fetchPrayerTimes(lat = 25.2048, lon = 55.2708) {
+        async function fetchPrayerTimes(lat, lon) {
             try {
-                const today = new Date();
-                const dateStr = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
-                const res = await fetch(`https://api.aladhan.com/v1/timings/${dateStr}?latitude=${lat}&longitude=${lon}&method=4`);
+                const dateStr = new Date().toISOString().split('T')[0].split('-').reverse().join('-');
+                const res = await fetch(`https://api.aladhan.com/v1/timings/${dateStr}?latitude=${lat}&longitude=${lon}&method=3`);
                 const data = await res.json();
                 if (data && data.data) {
                     todayPrayerData = data.data.timings;
@@ -697,7 +671,7 @@
                     updateNextPrayerDisplay();
                     
                     document.getElementById('prayer-list-content').innerHTML = `
-                        <div class="theme-accent-txt text-indigo-400 font-bold mb-2 pb-1 border-b border-slate-800">${hijri.day} ${hijri.month.en} ${hijri.year} AH</div>
+                        <div class="text-indigo-400 font-bold mb-2 pb-1 border-b border-slate-800">${hijri.day} ${hijri.month.en} ${hijri.year} AH</div>
                         <div class="flex justify-between py-1 border-b border-slate-800/60"><span>Fajr</span><span class="font-bold text-white">${todayPrayerData.Fajr}</span></div>
                         <div class="flex justify-between py-1 border-b border-slate-800/60"><span>Dhuhr</span><span class="font-bold text-white">${todayPrayerData.Dhuhr}</span></div>
                         <div class="flex justify-between py-1 border-b border-slate-800/60"><span>Asr</span><span class="font-bold text-white">${todayPrayerData.Asr}</span></div>
@@ -706,7 +680,7 @@
                     `;
                 }
             } catch (e) {
-                document.getElementById('next-prayer-label').innerText = 'Fajr 05:00 / Dhuhr 12:15';
+                document.getElementById('next-prayer-label').innerText = 'Unavailable';
             }
         }
 
@@ -726,7 +700,10 @@
             for (let p of prayers) {
                 const [h, m] = p.time.split(':').map(Number);
                 const pMinutes = h * 60 + m;
-                if (currentTime < pMinutes) { next = p; break; }
+                if (currentTime < pMinutes) {
+                    next = p;
+                    break;
+                }
             }
             document.getElementById('next-prayer-label').innerText = `Next: ${next.name} at ${next.time}`;
         }
@@ -737,7 +714,10 @@
         // NOTIFICATIONS
         function checkNotificationStatus() {
             const btn = document.getElementById('notif-toggle-btn');
-            if (!("Notification" in window)) { btn.innerText = "Not Supported"; return; }
+            if (!("Notification" in window)) {
+                btn.innerText = "Not Supported";
+                return;
+            }
             if (Notification.permission === "granted") {
                 btn.innerText = "Enabled ✓";
                 btn.className = "bg-emerald-600 text-white text-xs font-medium px-3 py-1.5 rounded-lg";
@@ -753,7 +733,7 @@
             checkNotificationStatus();
             if (permission === "granted") {
                 new Notification("🇩🇪 FinanzCampus Morning Briefing", {
-                    body: `Today's Dynamic Allowance: €${currentDailyLimit.toFixed(2)}. Have a great day!`,
+                    body: `Today's Dynamic Allowance: €${currentDailyLimit.toFixed(2)}. Have a productive day!`,
                     icon: "/App%20Assets/German%20App%20Logo.png"
                 });
             }
@@ -763,8 +743,11 @@
             const now = new Date();
             let targetYear = now.getFullYear();
             let targetDate = new Date(targetYear, 8, 15);
-            if (now > targetDate) targetDate = new Date(targetYear + 1, 2, 15);
-            const diffDays = Math.ceil((targetDate - now) / (1000 * 60 * 60 * 24));
+            if (now > targetDate) {
+                targetDate = new Date(targetYear + 1, 2, 15);
+            }
+            const diffTime = targetDate - now;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             document.getElementById('deadline-countdown').innerText = `Semesterbeitrag Deadline`;
             document.getElementById('deadline-badge').innerText = `${diffDays} days left`;
         }
@@ -790,8 +773,13 @@
                 errorDiv.classList.add('hidden');
 
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) { errorDiv.innerText = error.message; errorDiv.classList.remove('hidden'); }
-                else { currentUser = data.user; showApp(); }
+                if (error) {
+                    errorDiv.innerText = error.message;
+                    errorDiv.classList.remove('hidden');
+                } else {
+                    currentUser = data.user;
+                    showApp();
+                }
             });
 
             document.getElementById('btn-signup').addEventListener('click', async (e) => {
@@ -801,10 +789,15 @@
                 errorDiv.classList.add('hidden');
 
                 const { data, error } = await supabaseClient.auth.signUp({ email, password });
-                if (error) { errorDiv.innerText = error.message; errorDiv.classList.remove('hidden'); }
-                else {
-                    alert('Signup successful!');
-                    if(data.user) { currentUser = data.user; showApp(); }
+                if (error) {
+                    errorDiv.innerText = error.message;
+                    errorDiv.classList.remove('hidden');
+                } else {
+                    alert('Signup successful! You are now logged in.');
+                    if(data.user) {
+                        currentUser = data.user;
+                        showApp();
+                    }
                 }
             });
         }
@@ -818,7 +811,11 @@
         async function loadUserData() {
             if (!currentUser) return;
 
-            let { data: settingsData } = await supabaseClient.from('settings').select('*').eq('user_id', currentUser.id).single();
+            let { data: settingsData } = await supabaseClient
+                .from('settings')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .single();
 
             if (!settingsData) {
                 const defaultSettings = { 
@@ -832,8 +829,7 @@
                     gez_cost: 18.36,
                     internet_cost: 31.64,
                     sperrkonto_start: '2026-10',
-                    sperrkonto_months: 12,
-                    accent_style: 'indigo'
+                    sperrkonto_months: 12
                 };
                 await supabaseClient.from('settings').insert([defaultSettings]);
                 userSettings = defaultSettings;
@@ -851,17 +847,23 @@
 
             document.getElementById('greeting-label').innerText = `${greeting}, ${capitalizedName}!`;
 
-            let { data: txData } = await supabaseClient.from('transactions').select('*').eq('user_id', currentUser.id).order('date', { ascending: false });
+            let { data: txData } = await supabaseClient
+                .from('transactions')
+                .select('*')
+                .eq('user_id', currentUser.id)
+                .order('date', { ascending: false });
 
             transactions = txData || [];
-            applyTheme(userSettings.theme_mode);
-            applyAccent(userSettings.accent_style);
             updateUI();
         }
 
         function autoDetectTax(desc) {
             const taxKeywords = ['semesterbeitrag', 'db navigator', 'bahncard', 'thalia', 'amazon', 'macbook', 'laptop', 'book', 'buch', 'krankenkasse', 'semester'];
-            document.getElementById('exp-tax').checked = taxKeywords.some(k => desc.toLowerCase().includes(k));
+            const lower = desc.toLowerCase();
+            const isMatch = taxKeywords.some(keyword => lower.includes(keyword));
+            if (isMatch) {
+                document.getElementById('exp-tax').checked = true;
+            }
         }
 
         document.getElementById('expense-form').addEventListener('submit', async (e) => {
@@ -884,7 +886,15 @@
                 }
             }
 
-            const newTx = { user_id: currentUser.id, date, amount, category, description, is_tax_deductible: isTaxDeductible, receipt_url: receiptUrl };
+            const newTx = {
+                user_id: currentUser.id,
+                date,
+                amount,
+                category,
+                description,
+                is_tax_deductible: isTaxDeductible,
+                receipt_url: receiptUrl
+            };
 
             const { data, error } = await supabaseClient.from('transactions').insert([newTx]).select();
             if (!error && data) {
@@ -906,7 +916,10 @@
 
         async function deleteTransaction(id) {
             const { error } = await supabaseClient.from('transactions').delete().eq('id', id);
-            if (!error) { transactions = transactions.filter(t => t.id !== id); updateUI(); }
+            if (!error) {
+                transactions = transactions.filter(t => t.id !== id);
+                updateUI();
+            }
         }
 
         function openEditModal(id) {
@@ -950,7 +963,9 @@
             const dInput = document.getElementById('filter-input-day');
             const wInput = document.getElementById('filter-input-week');
 
-            mInput.classList.add('hidden'); dInput.classList.add('hidden'); wInput.classList.add('hidden');
+            mInput.classList.add('hidden');
+            dInput.classList.add('hidden');
+            wInput.classList.add('hidden');
 
             if (mode === 'month') { label.innerText = 'Select Month'; mInput.classList.remove('hidden'); }
             else if (mode === 'day') { label.innerText = 'Select Day'; dInput.classList.remove('hidden'); }
@@ -963,13 +978,17 @@
             let options = '';
             const now = new Date();
             for (let i = 0; i < 4; i++) {
-                const start = new Date(now); start.setDate(now.getDate() - (i * 7) - now.getDay());
-                const end = new Date(start); end.setDate(start.getDate() + 6);
-                options += `<option value="${start.toISOString().split('T')[0]}_${end.toISOString().split('T')[0]}">${start.toLocaleDateString()} - ${end.toLocaleDateString()}</option>`;
+                const start = new Date(now);
+                start.setDate(now.getDate() - (i * 7) - now.getDay());
+                const end = new Date(start);
+                end.setDate(start.getDate() + 6);
+                const val = `${start.toISOString().split('T')[0]}_${end.toISOString().split('T')[0]}`;
+                options += `<option value="${val}">${start.toLocaleDateString()} - ${end.toLocaleDateString()}</option>`;
             }
             select.innerHTML = options;
         }
 
+        // RENDER SPERRKONTO TRACKER DYNAMICALLY
         function renderSperrkontoTracker() {
             const startMonthStr = userSettings.sperrkonto_start || '2026-10';
             const totalMonths = Number(userSettings.sperrkonto_months) || 12;
@@ -1102,9 +1121,9 @@
                         <div class="space-y-0.5">
                             <div class="font-bold text-white flex items-center gap-1.5">
                                 ${t.description} 
-                                ${t.receipt_url ? `<a href="${t.receipt_url}" target="_blank" class="theme-accent-txt text-indigo-400 text-[10px] underline">[Receipt]</a>` : ''}
+                                ${t.receipt_url ? `<a href="${t.receipt_url}" target="_blank" class="text-indigo-400 text-[10px] underline">[Receipt]</a>` : ''}
                             </div>
-                            <div class="text-[10px] text-slate-400">${t.date} • <span class="theme-accent-txt text-indigo-400">${t.category}</span> ${t.is_tax_deductible ? '• <span class="text-emerald-400 font-medium">🇩🇪 Tax</span>' : ''}</div>
+                            <div class="text-[10px] text-slate-400">${t.date} • <span class="text-indigo-400">${t.category}</span> ${t.is_tax_deductible ? '• <span class="text-emerald-400 font-medium">🇩🇪 Tax</span>' : ''}</div>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-rose-400">-€${Number(t.amount).toFixed(2)}</span>
@@ -1123,7 +1142,7 @@
                     <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs">
                         <div class="space-y-0.5">
                             <div class="font-bold text-white">${t.description}</div>
-                            <div class="text-[10px] text-slate-400">${t.date} • <span class="theme-accent-txt text-indigo-400">${t.category}</span></div>
+                            <div class="text-[10px] text-slate-400">${t.date} • <span class="text-indigo-400">${t.category}</span></div>
                         </div>
                         <span class="font-bold text-emerald-400">€${Number(t.amount).toFixed(2)}</span>
                     </div>
@@ -1145,7 +1164,7 @@
             container.innerHTML = Object.entries(cats).map(([cat, amt]) => `
                 <div class="flex justify-between items-center text-slate-300 border-b border-slate-800/60 pb-1.5">
                     <span>${cat}</span>
-                    <span class="font-bold theme-accent-txt text-indigo-400">€${amt.toFixed(2)}</span>
+                    <span class="font-bold text-indigo-400">€${amt.toFixed(2)}</span>
                 </div>
             `).join('');
         }
@@ -1157,7 +1176,7 @@
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.className = "nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 py-1 px-3 transition";
             });
-            document.querySelector(`[data-target="tab-${tabName}"]`).className = "nav-btn flex flex-col items-center gap-1 theme-accent-txt text-indigo-400 py-1 px-3 transition";
+            document.querySelector(`[data-target="tab-${tabName}"]`).className = "nav-btn flex flex-col items-center gap-1 text-indigo-400 py-1 px-3 transition";
         }
 
         function openSettingsModal() {
@@ -1171,7 +1190,6 @@
             document.getElementById('set-sperrkonto-start').value = userSettings.sperrkonto_start || '2026-10';
             document.getElementById('set-sperrkonto-months').value = userSettings.sperrkonto_months || 12;
             document.getElementById('set-theme').value = userSettings.theme_mode || 'dark';
-            document.getElementById('set-accent').value = userSettings.accent_style || 'indigo';
             recalcFixedSum();
             checkNotificationStatus();
             document.getElementById('settings-modal').classList.remove('hidden');
@@ -1184,7 +1202,8 @@
             const health = parseFloat(document.getElementById('set-health').value) || 0;
             const gez = parseFloat(document.getElementById('set-gez').value) || 0;
             const internet = parseFloat(document.getElementById('set-internet').value) || 0;
-            document.getElementById('set-total-fixed').innerText = `€${(rent + health + gez + internet).toFixed(2)}`;
+            const total = rent + health + gez + internet;
+            document.getElementById('set-total-fixed').innerText = `€${total.toFixed(2)}`;
         }
 
         document.getElementById('settings-form').addEventListener('submit', async (e) => {
@@ -1199,34 +1218,36 @@
             const sperrkonto_start = document.getElementById('set-sperrkonto-start').value;
             const sperrkonto_months = parseInt(document.getElementById('set-sperrkonto-months').value) || 12;
             const theme_mode = document.getElementById('set-theme').value;
-            const accent_style = document.getElementById('set-accent').value;
             const fixed_costs = rent_cost + health_ins_cost + gez_cost + internet_cost;
 
-            const updated = { full_name, home_tz, monthly_budget, fixed_costs, rent_cost, health_ins_cost, gez_cost, internet_cost, sperrkonto_start, sperrkonto_months, theme_mode, accent_style };
+            const updated = { full_name, home_tz, monthly_budget, fixed_costs, rent_cost, health_ins_cost, gez_cost, internet_cost, sperrkonto_start, sperrkonto_months, theme_mode };
 
             const { error } = await supabaseClient.from('settings').update(updated).eq('user_id', currentUser.id);
             if (!error) {
                 userSettings = { ...userSettings, ...updated };
                 applyTheme(theme_mode);
-                applyAccent(accent_style);
                 closeSettingsModal();
                 loadUserData();
             }
         });
 
         function applyTheme(mode) {
-            document.getElementById('app-body').className = mode === 'light' ? 
-                "h-full text-slate-900 flex flex-col font-sans select-none antialiased bg-slate-100" : 
-                "h-full text-slate-100 flex flex-col font-sans select-none antialiased bg-slate-950";
+            const body = document.getElementById('app-body');
+            if (mode === 'light') {
+                body.className = "h-full text-slate-900 flex flex-col font-sans select-none antialiased bg-slate-100";
+            } else {
+                body.className = "h-full text-slate-100 flex flex-col font-sans select-none antialiased bg-slate-950";
+            }
         }
 
         function exportTaxCSV() {
             const taxTxs = transactions.filter(t => t.is_tax_deductible);
-            if (taxTxs.length === 0) { alert('No tax deductible expenses found.'); return; }
+            if (taxTxs.length === 0) { alert('No tax deductible expenses found to export.'); return; }
             let csvContent = "data:text/csv;charset=utf-8,Date,Category,Description,Amount (EUR)\n";
             taxTxs.forEach(t => { csvContent += `${t.date},${t.category},"${t.description}",${t.amount}\n`; });
+            const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
-            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("href", encodedUri);
             link.setAttribute("download", "Finanzamt_Tax_Deductions.csv");
             document.body.appendChild(link);
             link.click();
