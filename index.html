@@ -528,99 +528,148 @@
         </div>
     </div>
 
-    <!-- SETTINGS & ONBOARDING MODAL -->
+    <!-- SETTINGS & ACCOUNT SECURITY MODAL -->
     <div id="settings-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto no-scrollbar">
-            <div class="flex justify-between items-center">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
                 <div>
-                    <h3 id="settings-modal-title" class="text-sm font-bold text-white uppercase tracking-wider">Profile & Budget Setup</h3>
-                    <p class="text-[10px] text-slate-400">Configure your German living costs</p>
+                    <h3 id="settings-modal-title" class="text-sm font-bold text-white uppercase tracking-wider">Settings & Account Security</h3>
+                    <p class="text-[10px] text-slate-400">Manage budget, profile & password</p>
                 </div>
                 <button id="settings-close-btn" onclick="closeSettingsModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
-            <form id="settings-form" class="space-y-3">
-                <div class="space-y-2 border-b border-slate-800 pb-3">
-                    <span class="text-[10px] uppercase font-bold text-indigo-400">Student Profile & Hourly Wage</span>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Full Name</label>
-                            <input type="text" id="set-name" required placeholder="Ali" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+            <div class="space-y-6">
+                <!-- BUDGET & PROFILE FORM -->
+                <form id="settings-form" class="space-y-3">
+                    <div class="space-y-2 border-b border-slate-800 pb-3">
+                        <span class="text-[10px] uppercase font-bold text-indigo-400">Student Profile & Hourly Wage</span>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Full Name</label>
+                                <input type="text" id="set-name" required placeholder="Ali" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Hourly Wage (€/hr)</label>
+                                <input type="number" step="0.50" id="set-wage" required placeholder="14.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Hourly Wage (€/hr)</label>
-                            <input type="number" step="0.50" id="set-wage" required placeholder="14.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Home Time Zone</label>
+                                <select id="set-home-tz" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                                    <option value="Asia/Dubai">🇦🇪 UAE (GST)</option>
+                                    <option value="Asia/Karachi">🇵🇰 Pakistan (PKT)</option>
+                                    <option value="Asia/Kolkata">🇮🇳 India (IST)</option>
+                                    <option value="America/New_York">🇺🇸 US East (EST)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">WG Flatmates (GEZ Split)</label>
+                                <input type="number" min="1" id="set-flatmates" value="1" placeholder="1" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
+                            </div>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Home Time Zone</label>
-                            <select id="set-home-tz" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                                <option value="Asia/Dubai">🇦🇪 UAE (GST)</option>
-                                <option value="Asia/Karachi">🇵🇰 Pakistan (PKT)</option>
-                                <option value="Asia/Kolkata">🇮🇳 India (IST)</option>
-                                <option value="America/New_York">🇺🇸 US East (EST)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">WG Flatmates (GEZ Split)</label>
-                            <input type="number" min="1" id="set-flatmates" value="1" placeholder="1" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
+
+                    <!-- Sperrkonto Tracker Settings -->
+                    <div class="space-y-2 border-b border-slate-800 pb-3">
+                        <span class="text-[10px] uppercase font-bold text-indigo-400">Sperrkonto Config</span>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Start Month</label>
+                                <input type="month" id="set-sperrkonto-start" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Duration (Months)</label>
+                                <input type="number" id="set-sperrkonto-months" value="12" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            </div>
                         </div>
                     </div>
+
+                    <div class="space-y-2 border-b border-slate-800 pb-3">
+                        <span class="text-[10px] uppercase font-bold text-indigo-400">Monthly Budget & Living Costs</span>
+                        <div>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Monthly Allowance (€)</label>
+                            <input type="number" step="0.01" id="set-pool" required placeholder="992.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Warmmiete / Rent (€)</label>
+                                <input type="number" step="0.01" id="set-rent" placeholder="350.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Health Ins. (€)</label>
+                                <input type="number" step="0.01" id="set-health" placeholder="120.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Total GEZ Fee (€18.36)</label>
+                                <input type="number" step="0.01" id="set-gez" value="18.36" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">WiFi / Phone (€)</label>
+                                <input type="number" step="0.01" id="set-internet" placeholder="31.64" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex justify-between text-xs font-bold text-slate-300">
+                            <span>Calculated Share of Fixed Bills:</span>
+                            <span id="set-total-fixed" class="text-amber-400">€506.00</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition text-xs shadow-lg shadow-indigo-600/20">Save Profile & Budget</button>
+                </form>
+
+                <!-- ACCOUNT SECURITY SECTION (CHANGE PASSWORD) -->
+                <div class="space-y-3 pt-2">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="shield-alert" class="w-4 h-4 text-indigo-400"></i>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-white">Account Security & Password</h4>
+                    </div>
+                    <p class="text-[11px] text-slate-400 leading-relaxed">
+                        Update your temporary credentials to a secure private password. We recommend at least 12 characters combining letters, numbers, and symbols.
+                    </p>
+
+                    <div id="password-alert" class="hidden text-xs p-3 rounded-xl border"></div>
+
+                    <form id="password-form" class="space-y-3">
+                        <div class="relative">
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">New Private Password</label>
+                            <div class="relative">
+                                <input type="password" id="new-password" required placeholder="••••••••••••" oninput="evaluatePasswordStrength(this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white pr-10 focus:outline-none focus:border-indigo-500">
+                                <button type="button" onclick="togglePasswordVisibility('new-password', 'eye-icon-1')" class="absolute right-3 top-2.5 text-slate-400 hover:text-white">
+                                    <i id="eye-icon-1" data-lucide="eye" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <!-- Strength Indicator -->
+                            <div class="mt-1.5 flex items-center justify-between text-[10px]">
+                                <span class="text-slate-400">Strength: <strong id="strength-label" class="text-slate-500">None</strong></span>
+                                <span id="strength-reqs" class="text-slate-500">Min 12 chars recommended</span>
+                            </div>
+                            <div class="w-full bg-slate-950 h-1.5 rounded-full mt-1 overflow-hidden border border-slate-800">
+                                <div id="strength-bar" class="bg-slate-700 h-full w-0 transition-all duration-300"></div>
+                            </div>
+                        </div>
+
+                        <div class="relative">
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Confirm New Password</label>
+                            <div class="relative">
+                                <input type="password" id="confirm-password" required placeholder="••••••••••••" oninput="validatePasswordMatch()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white pr-10 focus:outline-none focus:border-indigo-500">
+                                <button type="button" onclick="togglePasswordVisibility('confirm-password', 'eye-icon-2')" class="absolute right-3 top-2.5 text-slate-400 hover:text-white">
+                                    <i id="eye-icon-2" data-lucide="eye" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <span id="match-error" class="text-[10px] text-rose-400 hidden mt-1 block">Passwords do not match.</span>
+                        </div>
+
+                        <button type="submit" id="btn-update-password" disabled class="w-full bg-slate-800 text-slate-400 font-medium py-2.5 rounded-xl transition text-xs shadow-lg cursor-not-allowed">Update Password Securely</button>
+                    </form>
                 </div>
-
-                <!-- Sperrkonto Tracker Settings -->
-                <div class="space-y-2 border-b border-slate-800 pb-3">
-                    <span class="text-[10px] uppercase font-bold text-indigo-400">Sperrkonto Config</span>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Start Month</label>
-                            <input type="month" id="set-sperrkonto-start" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Duration (Months)</label>
-                            <input type="number" id="set-sperrkonto-months" value="12" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <span class="text-[10px] uppercase font-bold text-indigo-400">Monthly Budget & Living Costs</span>
-                    <div>
-                        <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Monthly Allowance (€)</label>
-                        <input type="number" step="0.01" id="set-pool" required placeholder="992.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Warmmiete / Rent (€)</label>
-                            <input type="number" step="0.01" id="set-rent" placeholder="350.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Health Ins. (€)</label>
-                            <input type="number" step="0.01" id="set-health" placeholder="120.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Total GEZ Fee (€18.36)</label>
-                            <input type="number" step="0.01" id="set-gez" value="18.36" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">WiFi / Phone (€)</label>
-                            <input type="number" step="0.01" id="set-internet" placeholder="31.64" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex justify-between text-xs font-bold text-slate-300">
-                        <span>Calculated Share of Fixed Bills:</span>
-                        <span id="set-total-fixed" class="text-amber-400">€506.00</span>
-                    </div>
-                </div>
-
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition text-xs shadow-lg shadow-indigo-600/20">Save & Enter Dashboard</button>
-            </form>
+            </div>
         </div>
     </div>
 
@@ -630,7 +679,12 @@
         const SUPABASE_ANON_KEY = "sb_publishable_aFd__E0qhjpGVjP_cE6DOA_eKXDELB-";
 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-            auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+            auth: { 
+                persistSession: true, 
+                autoRefreshToken: true, 
+                detectSessionInUrl: true,
+                storage: window.localStorage
+            }
         });
 
         let currentUser = null;
@@ -643,6 +697,7 @@
         window.addEventListener('DOMContentLoaded', async () => {
             lucide.createIcons();
             setupAuthListeners();
+            setupPasswordListeners();
             calcDeadlineCountdown();
             startDualClock();
             
@@ -653,17 +708,164 @@
             document.getElementById('filter-input-day').value = todayStr;
             populateWeekDropdown();
 
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                currentUser = session.user;
-                showApp();
-            } else {
+            // RESTORE PERSISTENT SESSION AUTOMATICALLY
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                if (session && session.user) {
+                    currentUser = session.user;
+                    showApp();
+                } else {
+                    showAuth();
+                }
+            } catch (err) {
+                console.error("Session restoration error:", err);
                 showAuth();
             }
+
+            // Listen for auth state changes (token refresh, signout, etc.)
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_IN' && session) {
+                    currentUser = session.user;
+                    showApp();
+                } else if (event === 'SIGNED_OUT') {
+                    currentUser = null;
+                    showAuth();
+                }
+            });
             
             fetchLocationAndExternalData();
             convertCurrency();
         });
+
+        // PASSWORD STRENGTH & VALIDATION LOGIC
+        function evaluatePasswordStrength(password) {
+            const bar = document.getElementById('strength-bar');
+            const label = document.getElementById('strength-label');
+            const reqs = document.getElementById('strength-reqs');
+            
+            if (!password) {
+                bar.style.width = '0%';
+                bar.className = 'bg-slate-700 h-full w-0 transition-all duration-300';
+                label.innerText = 'None';
+                label.className = 'text-slate-500';
+                reqs.innerText = 'Min 12 chars recommended';
+                validatePasswordMatch();
+                return;
+            }
+
+            let score = 0;
+            if (password.length >= 8) score++;
+            if (password.length >= 12) score++;
+            if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+
+            if (score <= 2) {
+                bar.style.width = '33%';
+                bar.className = 'bg-rose-500 h-full transition-all duration-300';
+                label.innerText = 'Weak';
+                label.className = 'text-rose-400 font-bold';
+                reqs.innerText = 'Add numbers & symbols';
+            } else if (score <= 4) {
+                bar.style.width = '66%';
+                bar.className = 'bg-amber-500 h-full transition-all duration-300';
+                label.innerText = 'Medium';
+                label.className = 'text-amber-400 font-bold';
+                reqs.innerText = 'Good, make it longer';
+            } else {
+                bar.style.width = '100%';
+                bar.className = 'bg-emerald-500 h-full transition-all duration-300';
+                label.innerText = 'Strong';
+                label.className = 'text-emerald-400 font-bold';
+                reqs.innerText = 'Secure passphrase';
+            }
+            validatePasswordMatch();
+        }
+
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+
+        function validatePasswordMatch() {
+            const p1 = document.getElementById('new-password').value;
+            const p2 = document.getElementById('confirm-password').value;
+            const matchError = document.getElementById('match-error');
+            const submitBtn = document.getElementById('btn-update-password');
+
+            const isMatch = p1 === p2 && p1.length >= 8;
+            if (p2.length > 0 && p1 !== p2) {
+                matchError.classList.remove('hidden');
+            } else {
+                matchError.classList.add('hidden');
+            }
+
+            if (isMatch) {
+                submitBtn.disabled = false;
+                submitBtn.className = "w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition text-xs shadow-lg shadow-indigo-600/20 cursor-pointer";
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.className = "w-full bg-slate-800 text-slate-400 font-medium py-2.5 rounded-xl transition text-xs shadow-lg cursor-not-allowed";
+            }
+        }
+
+        function setupPasswordListeners() {
+            const form = document.getElementById('password-form');
+            const alertBox = document.getElementById('password-alert');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const newPassword = document.getElementById('new-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+
+                alertBox.classList.add('hidden');
+
+                if (newPassword !== confirmPassword) {
+                    alertBox.innerText = "Passwords do not match.";
+                    alertBox.className = "text-xs p-3 rounded-xl border bg-rose-500/10 border-rose-500/20 text-rose-400";
+                    alertBox.classList.remove('hidden');
+                    return;
+                }
+
+                if (newPassword.length < 8) {
+                    alertBox.innerText = "Password must be at least 8 characters long.";
+                    alertBox.className = "text-xs p-3 rounded-xl border bg-rose-500/10 border-rose-500/20 text-rose-400";
+                    alertBox.classList.remove('hidden');
+                    return;
+                }
+
+                const submitBtn = document.getElementById('btn-update-password');
+                submitBtn.disabled = true;
+                submitBtn.innerText = "Updating Password...";
+
+                try {
+                    const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
+                    if (error) throw error;
+
+                    alertBox.innerText = "Password updated successfully! Your account is now secured with your private password.";
+                    alertBox.className = "text-xs p-3 rounded-xl border bg-emerald-500/10 border-emerald-500/20 text-emerald-400";
+                    alertBox.classList.remove('hidden');
+                    form.reset();
+                    document.getElementById('strength-bar').style.width = '0%';
+                    document.getElementById('strength-label').innerText = 'None';
+                } catch (err) {
+                    alertBox.innerText = "Failed to update password: " + err.message;
+                    alertBox.className = "text-xs p-3 rounded-xl border bg-rose-500/10 border-rose-500/20 text-rose-400";
+                    alertBox.classList.remove('hidden');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = "Update Password Securely";
+                }
+            });
+        }
 
         // DUAL TIME ZONES CLOCK
         function startDualClock() {
@@ -729,7 +931,7 @@
             if (code <= 48) return "Foggy 🌫️";
             if (code <= 67) return "Rainy 🌧️";
             if (code <= 77) return "Snowy ❄️";
-            return "Fair ⛅";
+            return "Fair 2";
         }
 
         async function fetchPrayerTimes(lat = 25.2048, lon = 55.2708) {
@@ -824,7 +1026,7 @@
                 const { data, error } = await supabaseClient.auth.signUp({ email, password });
                 if (error) { errorDiv.innerText = error.message; errorDiv.classList.remove('hidden'); }
                 else {
-                    alert('Signup successful!');
+                    alert('Signup successful! You are now logged in.');
                     if(data.user) { currentUser = data.user; showApp(); }
                 }
             });
@@ -1292,7 +1494,7 @@
             if (isOnboarding) {
                 document.getElementById('settings-modal-title').innerText = "Welcome! Complete Setup";
             } else {
-                document.getElementById('settings-modal-title').innerText = "Profile & Budget Setup";
+                document.getElementById('settings-modal-title').innerText = "Settings & Account Security";
             }
 
             if (userSettings) {
