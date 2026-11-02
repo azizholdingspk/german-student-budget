@@ -367,7 +367,7 @@
 
             <!-- TAB 3: WORK & VISA COMPLIANCE -->
             <section id="tab-work" class="tab-content space-y-4 hidden">
-                <!-- STUDENT VISA WORK COMPLIANCE COUNTER (140 Days / 280 Half-Days Rule) -->
+                <!-- STUDENT VISA WORK COMPLIANCE COUNTER (140 Days Rule) -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-2">
                     <div class="flex justify-between items-center text-xs">
                         <span class="font-bold text-white flex items-center gap-1.5"><i data-lucide="scale" class="w-4 h-4 text-indigo-400"></i> German Visa Work Limit</span>
@@ -1031,7 +1031,7 @@
             document.getElementById('sperrkonto-end-lbl').innerText = `End: ${endDate.toISOString().slice(0, 7)}`;
         }
 
-        // VISA WORK COMPLIANCE COUNTER (140 Days)
+        // VISA WORK COMPLIANCE COUNTER (140 Days Rule)
         function renderVisaWorkCounter() {
             const currentYear = new Date().getFullYear();
             const thisYearShifts = shiftEntries.filter(s => new Date(s.date).getFullYear() === currentYear);
