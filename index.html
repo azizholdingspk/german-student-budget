@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>FinanzCampus 🇩🇪 Student Budget & Life</title>
     
-    <!-- PWA Manifest & App Logo -->
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0f172a">
-    <link rel="apple-touch-icon" href="/App%20Assets/German%20App%20Logo.png">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -44,7 +42,7 @@
 <body id="app-body" class="h-full text-slate-100 flex flex-col font-sans select-none antialiased bg-slate-950">
 
     <!-- AUTHENTICATION SCREEN -->
-    <div id="auth-screen" class="flex-1 flex flex-col justify-center items-center p-6 max-w-md w-full mx-auto">
+    <div id="auth-screen" class="flex-1 flex flex-col justify-center items-center p-6 max-w-md w-full mx-auto hidden">
         <div class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-2xl space-y-6">
             <div class="text-center space-y-2">
                 <div class="w-12 h-12 bg-indigo-600/20 border border-indigo-500/30 rounded-2xl flex items-center justify-center text-indigo-400 mx-auto text-xl">
@@ -61,14 +59,68 @@
                     <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Email Address</label>
                     <input type="email" id="auth-email" required placeholder="student@uni-deutschland.de" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
                 </div>
-                <div>
-                    <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Password</label>
-                    <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+                <div class="relative">
+                    <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Password / Temporary Password</label>
+                    <input type="password" id="auth-password" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white pr-10 focus:outline-none focus:border-indigo-500">
+                    <button type="button" onclick="togglePasswordVisibility('auth-password', 'auth-eye-icon')" class="absolute right-3 top-7 text-slate-400 hover:text-white">
+                        <i id="auth-eye-icon" data-lucide="eye" class="w-4 h-4"></i>
+                    </button>
                 </div>
                 <div class="flex gap-2 pt-2">
                     <button type="button" id="btn-login" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition text-sm shadow-lg shadow-indigo-600/20">Sign In</button>
                     <button type="button" id="btn-signup" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium py-3 rounded-xl transition text-sm">Sign Up</button>
                 </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FIRST LOGIN PASSWORD SETUP MODAL -->
+    <div id="first-login-modal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-indigo-500/30 rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl">
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 bg-indigo-600/20 border border-indigo-500/30 rounded-2xl flex items-center justify-center text-indigo-400 mx-auto text-xl">
+                    🔒
+                </div>
+                <h3 class="text-base font-bold text-white uppercase tracking-wider">Secure Your Account</h3>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    You have logged in with a temporary password. Please set your own private secure password to continue to your dashboard.
+                </p>
+            </div>
+
+            <div id="first-login-error" class="hidden bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs p-3 rounded-xl"></div>
+
+            <form id="first-login-form" class="space-y-3">
+                <div class="relative">
+                    <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">New Private Password</label>
+                    <input type="password" id="fl-new-pass" required placeholder="At least 12 characters" oninput="evaluatePasswordStrength(this.value, 'fl-strength-bar', 'fl-strength-text', 'fl-req-list')" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white pr-10 focus:outline-none focus:border-indigo-500">
+                    <button type="button" onclick="togglePasswordVisibility('fl-new-pass', 'fl-eye-1')" class="absolute right-3 top-7 text-slate-400 hover:text-white">
+                        <i id="fl-eye-1" data-lucide="eye" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <div class="space-y-1 bg-slate-950 p-3 rounded-xl border border-slate-800">
+                    <div class="flex justify-between text-[10px]">
+                        <span class="text-slate-400">Password Strength:</span>
+                        <span id="fl-strength-text" class="font-bold text-slate-400">Not Entered</span>
+                    </div>
+                    <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
+                        <div id="fl-strength-bar" class="bg-slate-700 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                    <ul id="fl-req-list" class="text-[10px] text-slate-400 space-y-0.5 pt-1">
+                        <li id="req-len" class="text-slate-500">○ At least 12 characters recommended</li>
+                        <li id="req-char" class="text-slate-500">○ Mix of letters, numbers & symbols</li>
+                    </ul>
+                </div>
+
+                <div class="relative">
+                    <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Confirm New Password</label>
+                    <input type="password" id="fl-confirm-pass" required placeholder="Re-enter password" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white pr-10 focus:outline-none focus:border-indigo-500">
+                    <button type="button" onclick="togglePasswordVisibility('fl-confirm-pass', 'fl-eye-2')" class="absolute right-3 top-7 text-slate-400 hover:text-white">
+                        <i id="fl-eye-2" data-lucide="eye" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <button type="submit" id="fl-submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition text-xs shadow-lg shadow-indigo-600/20">Set Secure Password & Enter Hub</button>
             </form>
         </div>
     </div>
@@ -167,6 +219,80 @@
                     </div>
                 </div>
 
+                <!-- NEW: ADD FAMILY SUPPORT / MONEY RECEIVED CARD -->
+                <div class="bg-slate-900 border border-emerald-500/30 rounded-2xl p-4 shadow-xl space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                            <i data-lucide="arrow-down-right" class="w-4 h-4 text-emerald-400"></i> Add Support / Money Received
+                        </h3>
+                        <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-md border border-emerald-500/20 font-medium">+ Income</span>
+                    </div>
+                    <form id="support-form" class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Amount Received (€)</label>
+                                <input type="number" step="0.01" id="sup-amount" required placeholder="200.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Source / Note</label>
+                                <input type="text" id="sup-source" placeholder="e.g. Dad Support" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Date</label>
+                                <input type="date" id="sup-date" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+                            </div>
+                            <div class="flex items-end">
+                                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2.5 rounded-xl transition text-xs shadow-lg shadow-emerald-600/20">Credit to Monthly Pool</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Log Quick Expense Form -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-1.5">
+                        <i data-lucide="plus-circle" class="w-4 h-4 text-indigo-400"></i> Log Quick Expense
+                    </h3>
+                    <form id="expense-form" class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Amount (€)</label>
+                                <input type="number" step="0.01" id="exp-amount" required placeholder="0.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Category</label>
+                                <select id="exp-category" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
+                                    <option value="Food">🛒 Groceries / Food</option>
+                                    <option value="Transport">🚆 Transport / DB</option>
+                                    <option value="Study">📚 Study / Books</option>
+                                    <option value="Leisure">☕ Leisure / Cafe</option>
+                                    <option value="Other">💡 Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Note (Optional)</label>
+                                <input type="text" id="exp-desc" placeholder="e.g. Rewe, Books..." oninput="autoDetectTax(this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Date</label>
+                                <input type="date" id="exp-date" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-1 bg-slate-950/50 p-2.5 rounded-xl border border-slate-800">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="landmark" class="w-4 h-4 text-indigo-400"></i>
+                                <span class="text-xs font-medium text-slate-300">Tax Deductible 🇩🇪</span>
+                            </div>
+                            <input type="checkbox" id="exp-tax" class="w-4 h-4 accent-indigo-600 rounded bg-slate-950 border-slate-800">
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition text-sm shadow-lg shadow-indigo-600/20">Add Expense</button>
+                    </form>
+                </div>
+
                 <!-- Fixed Monthly Bills Card (With Flatmate Splitter) -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
                     <div class="flex justify-between items-center">
@@ -216,8 +342,8 @@
                         <span class="text-indigo-400 font-medium">Auto-Calculated</span>
                     </div>
                     <div class="flex justify-between text-slate-400 border-b border-slate-800/60 pb-1.5">
-                        <span>Monthly Pool (Sperrkonto / BAföG)</span>
-                        <span id="math-pool" class="font-bold text-white">€992.00</span>
+                        <span>Monthly Pool (Sperrkonto / BAföG / Support)</span>
+                        <span id="math-pool" class="font-bold text-emerald-400">€992.00</span>
                     </div>
                     <div class="flex justify-between text-slate-400 border-b border-slate-800/60 pb-1.5">
                         <span>Total Fixed Costs (Rent + Ins + GEZ)</span>
@@ -235,49 +361,6 @@
                     <div id="category-breakdown-list" class="space-y-2 text-xs">
                         <div class="text-slate-500 text-center py-2">No variable expenses logged yet.</div>
                     </div>
-                </div>
-
-                <!-- Log Quick Expense Form -->
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
-                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300 mb-3 flex items-center gap-1.5">
-                        <i data-lucide="plus-circle" class="w-4 h-4 text-indigo-400"></i> Log Quick Expense
-                    </h3>
-                    <form id="expense-form" class="space-y-3">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Amount (€)</label>
-                                <input type="number" step="0.01" id="exp-amount" required placeholder="0.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Category</label>
-                                <select id="exp-category" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500">
-                                    <option value="Food">🛒 Groceries / Food</option>
-                                    <option value="Transport">🚆 Transport / DB</option>
-                                    <option value="Study">📚 Study / Books</option>
-                                    <option value="Leisure">☕ Leisure / Cafe</option>
-                                    <option value="Other">💡 Other</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Note (Optional)</label>
-                                <input type="text" id="exp-desc" placeholder="e.g. Rewe, Books..." oninput="autoDetectTax(this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Date</label>
-                                <input type="date" id="exp-date" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between pt-1 bg-slate-950/50 p-2.5 rounded-xl border border-slate-800">
-                            <div class="flex items-center gap-2">
-                                <i data-lucide="landmark" class="w-4 h-4 text-indigo-400"></i>
-                                <span class="text-xs font-medium text-slate-300">Tax Deductible 🇩🇪</span>
-                            </div>
-                            <input type="checkbox" id="exp-tax" class="w-4 h-4 accent-indigo-600 rounded bg-slate-950 border-slate-800">
-                        </div>
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition text-sm shadow-lg shadow-indigo-600/20">Add Expense</button>
-                    </form>
                 </div>
 
                 <!-- Sperrkonto Milestone Tracker -->
@@ -367,7 +450,6 @@
 
             <!-- TAB 3: WORK & VISA COMPLIANCE -->
             <section id="tab-work" class="tab-content space-y-4 hidden">
-                <!-- STUDENT VISA WORK COMPLIANCE COUNTER (140 Days Rule) -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-2">
                     <div class="flex justify-between items-center text-xs">
                         <span class="font-bold text-white flex items-center gap-1.5"><i data-lucide="scale" class="w-4 h-4 text-indigo-400"></i> German Visa Work Limit</span>
@@ -383,7 +465,6 @@
                     </div>
                 </div>
 
-                <!-- WORK SHIFT & EXPECTED EARNINGS STAGING CARD -->
                 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
@@ -391,7 +472,6 @@
                         </h3>
                     </div>
 
-                    <!-- Work Shift Entry Form -->
                     <form id="shift-form" class="space-y-3">
                         <div class="grid grid-cols-2 gap-3">
                             <div>
@@ -411,7 +491,6 @@
                     </form>
                 </div>
 
-                <!-- WORK SHIFTS HISTORY & PAYOUTS -->
                 <div class="space-y-3">
                     <div class="flex justify-between items-center text-xs px-1">
                         <span class="font-bold text-slate-300 uppercase tracking-wider">Work Shifts History & Payouts</span>
@@ -530,146 +609,161 @@
 
     <!-- SETTINGS & ACCOUNT SECURITY MODAL -->
     <div id="settings-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto no-scrollbar">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-5 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto no-scrollbar">
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
                 <div>
                     <h3 id="settings-modal-title" class="text-sm font-bold text-white uppercase tracking-wider">Settings & Account Security</h3>
-                    <p class="text-[10px] text-slate-400">Manage budget, profile & password</p>
+                    <p class="text-[10px] text-slate-400">Manage budget, profile & security</p>
                 </div>
                 <button id="settings-close-btn" onclick="closeSettingsModal()" class="text-slate-400 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             
-            <div class="space-y-6">
-                <!-- BUDGET & PROFILE FORM -->
-                <form id="settings-form" class="space-y-3">
-                    <div class="space-y-2 border-b border-slate-800 pb-3">
-                        <span class="text-[10px] uppercase font-bold text-indigo-400">Student Profile & Hourly Wage</span>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Full Name</label>
-                                <input type="text" id="set-name" required placeholder="Ali" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Hourly Wage (€/hr)</label>
-                                <input type="number" step="0.50" id="set-wage" required placeholder="14.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Home Time Zone</label>
-                                <select id="set-home-tz" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                                    <option value="Asia/Dubai">🇦🇪 UAE (GST)</option>
-                                    <option value="Asia/Karachi">🇵🇰 Pakistan (PKT)</option>
-                                    <option value="Asia/Kolkata">🇮🇳 India (IST)</option>
-                                    <option value="America/New_York">🇺🇸 US East (EST)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">WG Flatmates (GEZ Split)</label>
-                                <input type="number" min="1" id="set-flatmates" value="1" placeholder="1" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Sperrkonto Tracker Settings -->
-                    <div class="space-y-2 border-b border-slate-800 pb-3">
-                        <span class="text-[10px] uppercase font-bold text-indigo-400">Sperrkonto Config</span>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Start Month</label>
-                                <input type="month" id="set-sperrkonto-start" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Duration (Months)</label>
-                                <input type="number" id="set-sperrkonto-months" value="12" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2 border-b border-slate-800 pb-3">
-                        <span class="text-[10px] uppercase font-bold text-indigo-400">Monthly Budget & Living Costs</span>
-                        <div>
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Monthly Allowance (€)</label>
-                            <input type="number" step="0.01" id="set-pool" required placeholder="992.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Warmmiete / Rent (€)</label>
-                                <input type="number" step="0.01" id="set-rent" placeholder="350.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Health Ins. (€)</label>
-                                <input type="number" step="0.01" id="set-health" placeholder="120.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Total GEZ Fee (€18.36)</label>
-                                <input type="number" step="0.01" id="set-gez" value="18.36" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">WiFi / Phone (€)</label>
-                                <input type="number" step="0.01" id="set-internet" placeholder="31.64" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex justify-between text-xs font-bold text-slate-300">
-                            <span>Calculated Share of Fixed Bills:</span>
-                            <span id="set-total-fixed" class="text-amber-400">€506.00</span>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition text-xs shadow-lg shadow-indigo-600/20">Save Profile & Budget</button>
-                </form>
-
-                <!-- ACCOUNT SECURITY SECTION (CHANGE PASSWORD) -->
-                <div class="space-y-3 pt-2">
-                    <div class="flex items-center gap-2">
-                        <i data-lucide="shield-alert" class="w-4 h-4 text-indigo-400"></i>
-                        <h4 class="text-xs font-bold uppercase tracking-wider text-white">Account Security & Password</h4>
-                    </div>
-                    <p class="text-[11px] text-slate-400 leading-relaxed">
-                        Update your temporary credentials to a secure private password. We recommend at least 12 characters combining letters, numbers, and symbols.
-                    </p>
-
-                    <div id="password-alert" class="hidden text-xs p-3 rounded-xl border"></div>
-
-                    <form id="password-form" class="space-y-3">
-                        <div class="relative">
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">New Private Password</label>
-                            <div class="relative">
-                                <input type="password" id="new-password" required placeholder="••••••••••••" oninput="evaluatePasswordStrength(this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white pr-10 focus:outline-none focus:border-indigo-500">
-                                <button type="button" onclick="togglePasswordVisibility('new-password', 'eye-icon-1')" class="absolute right-3 top-2.5 text-slate-400 hover:text-white">
-                                    <i id="eye-icon-1" data-lucide="eye" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                            <!-- Strength Indicator -->
-                            <div class="mt-1.5 flex items-center justify-between text-[10px]">
-                                <span class="text-slate-400">Strength: <strong id="strength-label" class="text-slate-500">None</strong></span>
-                                <span id="strength-reqs" class="text-slate-500">Min 12 chars recommended</span>
-                            </div>
-                            <div class="w-full bg-slate-950 h-1.5 rounded-full mt-1 overflow-hidden border border-slate-800">
-                                <div id="strength-bar" class="bg-slate-700 h-full w-0 transition-all duration-300"></div>
-                            </div>
-                        </div>
-
-                        <div class="relative">
-                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Confirm New Password</label>
-                            <div class="relative">
-                                <input type="password" id="confirm-password" required placeholder="••••••••••••" oninput="validatePasswordMatch()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white pr-10 focus:outline-none focus:border-indigo-500">
-                                <button type="button" onclick="togglePasswordVisibility('confirm-password', 'eye-icon-2')" class="absolute right-3 top-2.5 text-slate-400 hover:text-white">
-                                    <i id="eye-icon-2" data-lucide="eye" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                            <span id="match-error" class="text-[10px] text-rose-400 hidden mt-1 block">Passwords do not match.</span>
-                        </div>
-
-                        <button type="submit" id="btn-update-password" disabled class="w-full bg-slate-800 text-slate-400 font-medium py-2.5 rounded-xl transition text-xs shadow-lg cursor-not-allowed">Update Password Securely</button>
-                    </form>
+            <!-- CHANGE PASSWORD -->
+            <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-4 space-y-3">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="shield-alert" class="w-4 h-4 text-indigo-400"></i>
+                    <h4 class="text-xs font-bold text-white uppercase tracking-wide">Change Password</h4>
                 </div>
+                
+                <div id="pwd-change-error" class="hidden bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs p-2.5 rounded-xl"></div>
+                <div id="pwd-change-success" class="hidden bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs p-2.5 rounded-xl">Password successfully updated!</div>
+
+                <form id="change-pwd-form" class="space-y-3">
+                    <div class="relative">
+                        <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Current Password / Temp Password</label>
+                        <input type="password" id="cp-current" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white pr-10 focus:outline-none focus:border-indigo-500">
+                        <button type="button" onclick="togglePasswordVisibility('cp-current', 'cp-eye-1')" class="absolute right-3 top-6 text-slate-400 hover:text-white">
+                            <i id="cp-eye-1" data-lucide="eye" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+
+                    <div class="relative">
+                        <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">New Private Password</label>
+                        <input type="password" id="cp-new" required placeholder="At least 12 characters" oninput="evaluatePasswordStrength(this.value, 'cp-strength-bar', 'cp-strength-text', 'cp-req-list')" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white pr-10 focus:outline-none focus:border-indigo-500">
+                        <button type="button" onclick="togglePasswordVisibility('cp-new', 'cp-eye-2')" class="absolute right-3 top-6 text-slate-400 hover:text-white">
+                            <i id="cp-eye-2" data-lucide="eye" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Password Strength Meter -->
+                    <div class="space-y-1 bg-slate-900 p-2.5 rounded-xl border border-slate-800/80">
+                        <div class="flex justify-between text-[10px]">
+                            <span class="text-slate-400">Strength:</span>
+                            <span id="cp-strength-text" class="font-bold text-slate-400">Not Entered</span>
+                        </div>
+                        <div class="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden">
+                            <div id="cp-strength-bar" class="bg-slate-700 h-full w-0 transition-all duration-300"></div>
+                        </div>
+                        <ul id="cp-req-list" class="text-[10px] text-slate-400 space-y-0.5 pt-1">
+                            <li id="cp-req-len" class="text-slate-500">○ At least 12 characters recommended</li>
+                            <li id="cp-req-char" class="text-slate-500">○ Mix of letters, numbers & symbols</li>
+                        </ul>
+                    </div>
+
+                    <div class="relative">
+                        <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Confirm New Password</label>
+                        <input type="password" id="cp-confirm" required placeholder="Re-enter password" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white pr-10 focus:outline-none focus:border-indigo-500">
+                        <button type="button" onclick="togglePasswordVisibility('cp-confirm', 'cp-eye-3')" class="absolute right-3 top-6 text-slate-400 hover:text-white">
+                            <i id="cp-eye-3" data-lucide="eye" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+
+                    <button type="submit" id="cp-submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition text-xs shadow-md">Update Password Securely</button>
+                </form>
             </div>
+
+            <!-- BUDGET & PROFILE CONFIG -->
+            <form id="settings-form" class="space-y-4 pt-2">
+                <div class="space-y-2 border-b border-slate-800 pb-3">
+                    <span class="text-[10px] uppercase font-bold text-indigo-400">Student Profile & Hourly Wage</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Full Name</label>
+                            <input type="text" id="set-name" required placeholder="Ali" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Hourly Wage (€/hr)</label>
+                            <input type="number" step="0.50" id="set-wage" required placeholder="14.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Home Time Zone</label>
+                            <select id="set-home-tz" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                                <option value="Asia/Dubai">🇦🇪 UAE (GST)</option>
+                                <option value="Asia/Karachi">🇵🇰 Pakistan (PKT)</option>
+                                <option value="Asia/Kolkata">🇮🇳 India (IST)</option>
+                                <option value="America/New_York">🇺🇸 US East (EST)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">WG Flatmates (GEZ Split)</label>
+                            <input type="number" min="1" id="set-flatmates" value="1" placeholder="1" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-2 border-b border-slate-800 pb-3">
+                    <span class="text-[10px] uppercase font-bold text-indigo-400">Sperrkonto Config</span>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Start Month</label>
+                            <input type="month" id="set-sperrkonto-start" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Duration (Months)</label>
+                            <input type="number" id="set-sperrkonto-months" value="12" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <span class="text-[10px] uppercase font-bold text-indigo-400">Monthly Budget & Living Costs</span>
+                    <div>
+                        <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Base Monthly Allowance (€)</label>
+                        <input type="number" step="0.01" id="set-pool" required placeholder="992.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Warmmiete / Rent (€)</label>
+                            <input type="number" step="0.01" id="set-rent" placeholder="350.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Health Ins. (€)</label>
+                            <input type="number" step="0.01" id="set-health" placeholder="120.00" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">Total GEZ Fee (€18.36)</label>
+                            <input type="number" step="0.01" id="set-gez" value="18.36" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-medium text-slate-400 uppercase mb-1">WiFi / Phone (€)</label>
+                            <input type="number" step="0.01" id="set-internet" placeholder="31.64" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" oninput="recalcFixedSum()">
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800 flex justify-between text-xs font-bold text-slate-300">
+                        <span>Calculated Share of Fixed Bills:</span>
+                        <span id="set-total-fixed" class="text-amber-400">€506.00</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-[11px] text-slate-400 space-y-1">
+                    <div class="flex items-center gap-1.5 text-indigo-400 font-bold">
+                        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Active Session Secure
+                    </div>
+                    <div>Supabase Auth persistent session enabled with automatic token refresh.</div>
+                </div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 rounded-xl transition text-xs shadow-lg shadow-indigo-600/20">Save Budget Settings</button>
+                    <button type="button" onclick="handleLogout()" class="bg-rose-500/20 border border-rose-500/30 text-rose-400 hover:bg-rose-500/30 font-medium px-4 py-3 rounded-xl transition text-xs">Logout</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -697,177 +791,39 @@
         window.addEventListener('DOMContentLoaded', async () => {
             lucide.createIcons();
             setupAuthListeners();
-            setupPasswordListeners();
+            setupPasswordChangeListeners();
+            setupFirstLoginListeners();
             calcDeadlineCountdown();
             startDualClock();
             
             const todayStr = new Date().toISOString().split('T')[0];
             document.getElementById('exp-date').value = todayStr;
             document.getElementById('shift-date').value = todayStr;
+            document.getElementById('sup-date').value = todayStr;
             document.getElementById('filter-input-month').value = todayStr.substring(0, 7);
             document.getElementById('filter-input-day').value = todayStr;
             populateWeekDropdown();
 
-            // RESTORE PERSISTENT SESSION AUTOMATICALLY
             try {
                 const { data: { session }, error } = await supabaseClient.auth.getSession();
-                if (session && session.user) {
+                if (error) {
+                    console.error("Session restore error:", error);
+                    showAuth();
+                } else if (session && session.user) {
                     currentUser = session.user;
                     showApp();
                 } else {
                     showAuth();
                 }
             } catch (err) {
-                console.error("Session restoration error:", err);
+                console.error("Auth initialization failed:", err);
                 showAuth();
             }
-
-            // Listen for auth state changes (token refresh, signout, etc.)
-            supabaseClient.auth.onAuthStateChange((event, session) => {
-                if (event === 'SIGNED_IN' && session) {
-                    currentUser = session.user;
-                    showApp();
-                } else if (event === 'SIGNED_OUT') {
-                    currentUser = null;
-                    showAuth();
-                }
-            });
             
             fetchLocationAndExternalData();
             convertCurrency();
         });
 
-        // PASSWORD STRENGTH & VALIDATION LOGIC
-        function evaluatePasswordStrength(password) {
-            const bar = document.getElementById('strength-bar');
-            const label = document.getElementById('strength-label');
-            const reqs = document.getElementById('strength-reqs');
-            
-            if (!password) {
-                bar.style.width = '0%';
-                bar.className = 'bg-slate-700 h-full w-0 transition-all duration-300';
-                label.innerText = 'None';
-                label.className = 'text-slate-500';
-                reqs.innerText = 'Min 12 chars recommended';
-                validatePasswordMatch();
-                return;
-            }
-
-            let score = 0;
-            if (password.length >= 8) score++;
-            if (password.length >= 12) score++;
-            if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
-            if (/[0-9]/.test(password)) score++;
-            if (/[^A-Za-z0-9]/.test(password)) score++;
-
-            if (score <= 2) {
-                bar.style.width = '33%';
-                bar.className = 'bg-rose-500 h-full transition-all duration-300';
-                label.innerText = 'Weak';
-                label.className = 'text-rose-400 font-bold';
-                reqs.innerText = 'Add numbers & symbols';
-            } else if (score <= 4) {
-                bar.style.width = '66%';
-                bar.className = 'bg-amber-500 h-full transition-all duration-300';
-                label.innerText = 'Medium';
-                label.className = 'text-amber-400 font-bold';
-                reqs.innerText = 'Good, make it longer';
-            } else {
-                bar.style.width = '100%';
-                bar.className = 'bg-emerald-500 h-full transition-all duration-300';
-                label.innerText = 'Strong';
-                label.className = 'text-emerald-400 font-bold';
-                reqs.innerText = 'Secure passphrase';
-            }
-            validatePasswordMatch();
-        }
-
-        function togglePasswordVisibility(inputId, iconId) {
-            const input = document.getElementById(inputId);
-            const icon = document.getElementById(iconId);
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.setAttribute('data-lucide', 'eye-off');
-            } else {
-                input.type = 'password';
-                icon.setAttribute('data-lucide', 'eye');
-            }
-            lucide.createIcons();
-        }
-
-        function validatePasswordMatch() {
-            const p1 = document.getElementById('new-password').value;
-            const p2 = document.getElementById('confirm-password').value;
-            const matchError = document.getElementById('match-error');
-            const submitBtn = document.getElementById('btn-update-password');
-
-            const isMatch = p1 === p2 && p1.length >= 8;
-            if (p2.length > 0 && p1 !== p2) {
-                matchError.classList.remove('hidden');
-            } else {
-                matchError.classList.add('hidden');
-            }
-
-            if (isMatch) {
-                submitBtn.disabled = false;
-                submitBtn.className = "w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition text-xs shadow-lg shadow-indigo-600/20 cursor-pointer";
-            } else {
-                submitBtn.disabled = true;
-                submitBtn.className = "w-full bg-slate-800 text-slate-400 font-medium py-2.5 rounded-xl transition text-xs shadow-lg cursor-not-allowed";
-            }
-        }
-
-        function setupPasswordListeners() {
-            const form = document.getElementById('password-form');
-            const alertBox = document.getElementById('password-alert');
-
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const newPassword = document.getElementById('new-password').value;
-                const confirmPassword = document.getElementById('confirm-password').value;
-
-                alertBox.classList.add('hidden');
-
-                if (newPassword !== confirmPassword) {
-                    alertBox.innerText = "Passwords do not match.";
-                    alertBox.className = "text-xs p-3 rounded-xl border bg-rose-500/10 border-rose-500/20 text-rose-400";
-                    alertBox.classList.remove('hidden');
-                    return;
-                }
-
-                if (newPassword.length < 8) {
-                    alertBox.innerText = "Password must be at least 8 characters long.";
-                    alertBox.className = "text-xs p-3 rounded-xl border bg-rose-500/10 border-rose-500/20 text-rose-400";
-                    alertBox.classList.remove('hidden');
-                    return;
-                }
-
-                const submitBtn = document.getElementById('btn-update-password');
-                submitBtn.disabled = true;
-                submitBtn.innerText = "Updating Password...";
-
-                try {
-                    const { error } = await supabaseClient.auth.updateUser({ password: newPassword });
-                    if (error) throw error;
-
-                    alertBox.innerText = "Password updated successfully! Your account is now secured with your private password.";
-                    alertBox.className = "text-xs p-3 rounded-xl border bg-emerald-500/10 border-emerald-500/20 text-emerald-400";
-                    alertBox.classList.remove('hidden');
-                    form.reset();
-                    document.getElementById('strength-bar').style.width = '0%';
-                    document.getElementById('strength-label').innerText = 'None';
-                } catch (err) {
-                    alertBox.innerText = "Failed to update password: " + err.message;
-                    alertBox.className = "text-xs p-3 rounded-xl border bg-rose-500/10 border-rose-500/20 text-rose-400";
-                    alertBox.classList.remove('hidden');
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = "Update Password Securely";
-                }
-            });
-        }
-
-        // DUAL TIME ZONES CLOCK
         function startDualClock() {
             function updateClocks() {
                 const now = new Date();
@@ -885,7 +841,6 @@
             setInterval(updateClocks, 10000);
         }
 
-        // CURRENCY CONVERTER
         const exchangeRates = { AED: 3.965, USD: 1.08, GBP: 0.85, INR: 91.50, PKR: 301.20 };
         function convertCurrency() {
             const eur = parseFloat(document.getElementById('conv-eur').value) || 0;
@@ -931,7 +886,7 @@
             if (code <= 48) return "Foggy 🌫️";
             if (code <= 67) return "Rainy 🌧️";
             if (code <= 77) return "Snowy ❄️";
-            return "Fair 2";
+            return "Fair ⛅";
         }
 
         async function fetchPrayerTimes(lat = 25.2048, lon = 55.2708) {
@@ -992,9 +947,72 @@
             document.getElementById('deadline-badge').innerText = `${diffDays} days left`;
         }
 
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (!input || !icon) return;
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+
+        function evaluatePasswordStrength(password, barId, textId, reqListId) {
+            const bar = document.getElementById(barId);
+            const text = document.getElementById(textId);
+            if (!bar || !text) return;
+
+            if (!password || password.length === 0) {
+                bar.style.width = '0%';
+                bar.className = 'bg-slate-700 h-full transition-all duration-300';
+                text.innerText = 'Not Entered';
+                text.className = 'font-bold text-slate-400';
+                return;
+            }
+
+            let score = 0;
+            if (password.length >= 8) score++;
+            if (password.length >= 12) score++;
+            if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+
+            const weakPatterns = ['password', '123456', 'qwerty', 'germany2026', 'student123', 'admin'];
+            const isWeakPattern = weakPatterns.some(p => password.toLowerCase().includes(p));
+            if (isWeakPattern) score = Math.min(score, 1);
+
+            let strengthLabel = 'Weak';
+            let barColor = 'bg-rose-500';
+            let textColor = 'text-rose-400';
+            let width = '33%';
+
+            if (score >= 4 && !isWeakPattern && password.length >= 12) {
+                strengthLabel = 'Strong';
+                barColor = 'bg-emerald-500';
+                textColor = 'text-emerald-400';
+                width = '100%';
+            } else if (score >= 3 && password.length >= 8) {
+                strengthLabel = 'Medium';
+                barColor = 'bg-amber-500';
+                textColor = 'text-amber-400';
+                width = '66%';
+            }
+
+            bar.style.width = width;
+            bar.className = `${barColor} h-full transition-all duration-300`;
+            text.innerText = strengthLabel;
+            text.className = `font-bold ${textColor}`;
+        }
+
         function showAuth() {
             document.getElementById('auth-screen').classList.remove('hidden');
             document.getElementById('app-wrapper').classList.add('hidden');
+            document.getElementById('first-login-modal').classList.add('hidden');
         }
 
         function showApp() {
@@ -1013,8 +1031,13 @@
                 errorDiv.classList.add('hidden');
 
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) { errorDiv.innerText = error.message; errorDiv.classList.remove('hidden'); }
-                else { currentUser = data.user; showApp(); }
+                if (error) { 
+                    errorDiv.innerText = error.message; 
+                    errorDiv.classList.remove('hidden'); 
+                } else { 
+                    currentUser = data.user; 
+                    showApp(); 
+                }
             });
 
             document.getElementById('btn-signup').addEventListener('click', async (e) => {
@@ -1024,10 +1047,110 @@
                 errorDiv.classList.add('hidden');
 
                 const { data, error } = await supabaseClient.auth.signUp({ email, password });
-                if (error) { errorDiv.innerText = error.message; errorDiv.classList.remove('hidden'); }
-                else {
-                    alert('Signup successful! You are now logged in.');
-                    if(data.user) { currentUser = data.user; showApp(); }
+                if (error) { 
+                    errorDiv.innerText = error.message; 
+                    errorDiv.classList.remove('hidden'); 
+                } else {
+                    alert('Signup successful! Welcome to FinanzCampus.');
+                    if(data.user) { 
+                        currentUser = data.user; 
+                        showApp(); 
+                    }
+                }
+            });
+        }
+
+        function setupPasswordChangeListeners() {
+            const form = document.getElementById('change-pwd-form');
+            const errorBox = document.getElementById('pwd-change-error');
+            const successBox = document.getElementById('pwd-change-success');
+            const submitBtn = document.getElementById('cp-submit-btn');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                errorBox.classList.add('hidden');
+                successBox.classList.add('hidden');
+
+                const newPass = document.getElementById('cp-new').value;
+                const confirmPass = document.getElementById('cp-confirm').value;
+
+                if (!newPass || !confirmPass) {
+                    errorBox.innerText = 'Please fill in all password fields.';
+                    errorBox.classList.remove('hidden');
+                    return;
+                }
+
+                if (newPass !== confirmPass) {
+                    errorBox.innerText = 'New passwords do not match. Please verify.';
+                    errorBox.classList.remove('hidden');
+                    return;
+                }
+
+                if (newPass.length < 8) {
+                    errorBox.innerText = 'Password must be at least 8 characters long.';
+                    errorBox.classList.remove('hidden');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Updating Password...';
+
+                try {
+                    const { error } = await supabaseClient.auth.updateUser({ password: newPass });
+                    if (error) throw error;
+
+                    successBox.classList.remove('hidden');
+                    form.reset();
+                    evaluatePasswordStrength('', 'cp-strength-bar', 'cp-strength-text');
+                } catch (err) {
+                    errorBox.innerText = 'Failed to update password: ' + (err.message || 'Please re-verify your current password.');
+                    errorBox.classList.remove('hidden');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Update Password Securely';
+                }
+            });
+        }
+
+        function setupFirstLoginListeners() {
+            const form = document.getElementById('first-login-form');
+            const errorBox = document.getElementById('first-login-error');
+            const submitBtn = document.getElementById('fl-submit-btn');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                errorBox.classList.add('hidden');
+
+                const newPass = document.getElementById('fl-new-pass').value;
+                const confirmPass = document.getElementById('fl-confirm-pass').value;
+
+                if (newPass !== confirmPass) {
+                    errorBox.innerText = 'Passwords do not match.';
+                    errorBox.classList.remove('hidden');
+                    return;
+                }
+
+                if (newPass.length < 8) {
+                    errorBox.innerText = 'Password must be at least 8 characters long.';
+                    errorBox.classList.remove('hidden');
+                    return;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Securing Account...';
+
+                try {
+                    const { error } = await supabaseClient.auth.updateUser({ password: newPass });
+                    if (error) throw error;
+
+                    document.getElementById('first-login-modal').classList.add('hidden');
+                    showApp();
+                } catch (err) {
+                    errorBox.innerText = 'Error: ' + err.message;
+                    errorBox.classList.remove('hidden');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Set Secure Password & Enter Hub';
                 }
             });
         }
@@ -1035,10 +1158,10 @@
         async function handleLogout() {
             await supabaseClient.auth.signOut();
             currentUser = null;
+            userSettings = null;
             showAuth();
         }
 
-        // LOAD USER DATA & SHIFTS
         async function loadUserData() {
             if (!currentUser) return;
 
@@ -1073,7 +1196,92 @@
             }
         }
 
-        // WORK SHIFT ENTRY SUBMISSION
+        // NEW: FAMILY SUPPORT FORM SUBMISSION (Income & Support Tracking)
+        document.getElementById('support-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('sup-amount').value);
+            const source = document.getElementById('sup-source').value || 'Family Support';
+            const date = document.getElementById('sup-date').value;
+
+            if (!amount || amount <= 0) { alert('Please enter a valid amount.'); return; }
+
+            const newIncomeTx = {
+                user_id: currentUser.id,
+                date: date,
+                amount: amount,
+                category: 'Support',
+                description: source,
+                is_tax_deductible: false
+            };
+
+            const { data, error } = await supabaseClient.from('transactions').insert([newIncomeTx]).select();
+            if (!error && data) {
+                transactions.unshift(data[0]);
+
+                userSettings.monthly_budget = Number(userSettings.monthly_budget || 0) + amount;
+                await supabaseClient.from('settings').update({ monthly_budget: userSettings.monthly_budget }).eq('user_id', currentUser.id);
+
+                document.getElementById('support-form').reset();
+                document.getElementById('sup-date').value = new Date().toISOString().split('T')[0];
+                updateUI();
+            } else {
+                alert('Error logging income: ' + (error ? error.message : 'Unknown error'));
+            }
+        });
+
+        // CREDITED WORK SHIFTS AS INCOME
+        async function creditShiftPayout(shiftId) {
+            const shift = shiftEntries.find(s => s.id === shiftId);
+            if (!shift) return;
+
+            const { error: shiftErr } = await supabaseClient.from('shifts').update({ status: 'credited' }).eq('id', shiftId);
+            if (!shiftErr) {
+                shift.status = 'credited';
+                
+                const earningsAmt = Number(shift.hours) * Number(shift.hourly_rate);
+                
+                userSettings.monthly_budget = Number(userSettings.monthly_budget || 0) + earningsAmt;
+                await supabaseClient.from('settings').update({ monthly_budget: userSettings.monthly_budget }).eq('user_id', currentUser.id);
+
+                const newWorkTx = {
+                    user_id: currentUser.id,
+                    date: shift.date,
+                    amount: earningsAmt,
+                    category: 'Work',
+                    description: `Work Payout (${shift.hours} hrs @ €${shift.hourly_rate}/hr)`,
+                    is_tax_deductible: false
+                };
+
+                const { data: txData, error: txErr } = await supabaseClient.from('transactions').insert([newWorkTx]).select();
+                if (!txErr && txData) {
+                    transactions.unshift(txData[0]);
+                }
+
+                updateUI();
+            }
+        }
+
+        // AUTO-RECALCULATION ON TRANSACTION DELETION
+        async function deleteTransaction(id) {
+            const tx = transactions.find(t => t.id === id);
+            if (!tx) return;
+
+            const { error } = await supabaseClient.from('transactions').delete().eq('id', id);
+            if (!error) {
+                transactions = transactions.filter(t => t.id !== id);
+
+                if (tx.category === 'Support' || tx.category === 'Work') {
+                    const currentBudget = Number(userSettings.monthly_budget || 0);
+                    const newBudget = Math.max(0, currentBudget - Number(tx.amount));
+                    userSettings.monthly_budget = newBudget;
+
+                    await supabaseClient.from('settings').update({ monthly_budget: newBudget }).eq('user_id', currentUser.id);
+                }
+
+                updateUI();
+            }
+        }
+
         document.getElementById('shift-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const date = document.getElementById('shift-date').value;
@@ -1092,23 +1300,6 @@
             }
         });
 
-        // CREDIT SHIFT PAYOUT TO BUDGET POOL
-        async function creditShiftPayout(shiftId) {
-            const shift = shiftEntries.find(s => s.id === shiftId);
-            if (!shift) return;
-
-            const { error } = await supabaseClient.from('shifts').update({ status: 'credited' }).eq('id', shiftId);
-            if (!error) {
-                shift.status = 'credited';
-                
-                const earningsAmt = Number(shift.hours) * Number(shift.hourly_rate);
-                userSettings.monthly_budget = Number(userSettings.monthly_budget) + earningsAmt;
-                await supabaseClient.from('settings').update({ monthly_budget: userSettings.monthly_budget }).eq('user_id', currentUser.id);
-
-                updateUI();
-            }
-        }
-
         async function deleteShift(shiftId) {
             const { error } = await supabaseClient.from('shifts').delete().eq('id', shiftId);
             if (!error) {
@@ -1122,7 +1313,6 @@
             document.getElementById('exp-tax').checked = taxKeywords.some(k => desc.toLowerCase().includes(k));
         }
 
-        // EXPENSE LOGGING
         document.getElementById('expense-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const amount = parseFloat(document.getElementById('exp-amount').value);
@@ -1144,14 +1334,9 @@
             }
         });
 
-        async function deleteTransaction(id) {
-            const { error } = await supabaseClient.from('transactions').delete().eq('id', id);
-            if (!error) { transactions = transactions.filter(t => t.id !== id); updateUI(); }
-        }
-
         function openEditModal(id) {
             const tx = transactions.find(t => t.id === id);
-            if (!tx) return;
+            if (!tx || tx.category === 'Support' || tx.category === 'Work') return;
             document.getElementById('edit-id').value = tx.id;
             document.getElementById('edit-amount').value = tx.amount;
             document.getElementById('edit-category').value = tx.category;
@@ -1233,7 +1418,6 @@
             document.getElementById('sperrkonto-end-lbl').innerText = `End: ${endDate.toISOString().slice(0, 7)}`;
         }
 
-        // VISA WORK COMPLIANCE COUNTER (140 Days Rule)
         function renderVisaWorkCounter() {
             const currentYear = new Date().getFullYear();
             const thisYearShifts = shiftEntries.filter(s => new Date(s.date).getFullYear() === currentYear);
@@ -1269,7 +1453,6 @@
             else progressBar.className = "bg-indigo-500 h-full rounded-full transition-all duration-500";
         }
 
-        // RENDER EXPECTED EARNINGS STAGING LIST
         function renderShiftStaging() {
             const pendingList = document.getElementById('pending-shifts-list');
             const pendingShifts = shiftEntries.filter(s => s.status === 'pending');
@@ -1301,12 +1484,14 @@
             lucide.createIcons();
         }
 
-        // RENDER MONTHLY EXPENSE TRENDS BAR GRAPH
+        // GRAPH FILTERING (Excludes Support & Work Income)
         function renderExpenseBarGraph(monthTxs, totalDays) {
             const graphContainer = document.getElementById('expense-bar-graph');
             const dailyTotals = Array(totalDays).fill(0);
             
-            monthTxs.forEach(t => {
+            const expenseOnlyTxs = monthTxs.filter(t => t.category !== 'Support' && t.category !== 'Work');
+
+            expenseOnlyTxs.forEach(t => {
                 const d = new Date(t.date);
                 const dayNum = d.getDate();
                 if (dayNum >= 1 && dayNum <= totalDays) dailyTotals[dayNum - 1] += Number(t.amount);
@@ -1323,16 +1508,18 @@
             }).join('');
         }
 
-        // RENDER CATEGORY BREAKDOWN
+        // CATEGORY BREAKDOWN (Excludes Support & Work Income)
         function renderCategoryBreakdown(monthTxs) {
             const container = document.getElementById('category-breakdown-list');
-            if (monthTxs.length === 0) {
+            const expenseOnlyTxs = monthTxs.filter(t => t.category !== 'Support' && t.category !== 'Work');
+
+            if (expenseOnlyTxs.length === 0) {
                 container.innerHTML = `<div class="text-slate-500 text-center py-2">No variable expenses logged yet.</div>`;
                 return;
             }
 
             const cats = {};
-            monthTxs.forEach(t => { cats[t.category] = (cats[t.category] || 0) + Number(t.amount); });
+            expenseOnlyTxs.forEach(t => { cats[t.category] = (cats[t.category] || 0) + Number(t.amount); });
 
             container.innerHTML = Object.entries(cats).map(([cat, amt]) => `
                 <div class="flex justify-between items-center text-slate-300 border-b border-slate-800/60 pb-1.5">
@@ -1355,7 +1542,6 @@
 
             const totalFixed = rent + health + gezShare + internet;
 
-            // Render Bills Widget
             document.getElementById('total-fixed-summary').innerText = `-€${totalFixed.toFixed(2)}`;
             document.getElementById('bill-rent-val').innerText = `€${rent.toFixed(0)}`;
             document.getElementById('bill-health-val').innerText = `€${health.toFixed(0)}`;
@@ -1371,9 +1557,11 @@
                 return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
             });
 
-            const totalSpentThisMonth = monthTxs.reduce((sum, t) => sum + Number(t.amount), 0);
+            const monthExpenses = monthTxs.filter(t => t.category !== 'Support' && t.category !== 'Work');
+            const totalSpentThisMonth = monthExpenses.reduce((sum, t) => sum + Number(t.amount), 0);
+
             const todayStr = now.toISOString().split('T')[0];
-            const todaySpent = monthTxs.filter(t => t.date === todayStr).reduce((sum, t) => sum + Number(t.amount), 0);
+            const todaySpent = monthExpenses.filter(t => t.date === todayStr).reduce((sum, t) => sum + Number(t.amount), 0);
 
             const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
             const remainingDays = lastDayOfMonth - now.getDate() + 1;
@@ -1382,7 +1570,6 @@
             const netAvailablePool = variablePool - totalSpentThisMonth;
             currentDailyLimit = remainingDays > 0 ? Math.max(0, netAvailablePool / remainingDays) : 0;
 
-            // Update Math Breakdown Card
             document.getElementById('math-pool').innerText = `€${pool.toFixed(2)}`;
             document.getElementById('math-fixed').innerText = `-€${totalFixed.toFixed(2)}`;
             document.getElementById('math-variable').innerText = `€${variablePool.toFixed(2)}`;
@@ -1416,7 +1603,7 @@
             lucide.createIcons();
         }
 
-        // RENDER TRANSACTIONS AND TAX DEDUCTIBLE LIST
+        // RENDER TRANSACTIONS WITH GREEN INCOME BADGES
         function renderTransactionsLists() {
             const txList = document.getElementById('transactions-list');
             const taxList = document.getElementById('tax-transactions-list');
@@ -1442,22 +1629,28 @@
             if (filteredTxs.length === 0) {
                 txList.innerHTML = `<div class="text-slate-500 text-center py-6 text-xs bg-slate-900 border border-slate-800 rounded-2xl">No transactions logged for this period.</div>`;
             } else {
-                txList.innerHTML = filteredTxs.map(t => `
-                    <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs">
-                        <div class="space-y-0.5">
-                            <div class="font-bold text-white">${t.description}</div>
-                            <div class="text-[10px] text-slate-400">${t.date} • <span class="text-indigo-400">${t.category}</span> ${t.is_tax_deductible ? '• <span class="text-emerald-400 font-medium">🇩🇪 Tax</span>' : ''}</div>
+                txList.innerHTML = filteredTxs.map(t => {
+                    const isIncome = t.category === 'Support' || t.category === 'Work';
+                    const isEditable = !isIncome;
+                    return `
+                        <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs">
+                            <div class="space-y-0.5">
+                                <div class="font-bold text-white flex items-center gap-1.5">
+                                    ${t.description}
+                                    ${isIncome ? `<span class="text-[9px] bg-emerald-500/10 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/20 font-medium">Income</span>` : ''}
+                                </div>
+                                <div class="text-[10px] text-slate-400">${t.date} • <span class="${isIncome ? 'text-emerald-400 font-medium' : 'text-indigo-400'}">${t.category}</span> ${t.is_tax_deductible ? '• <span class="text-emerald-400 font-medium">🇩🇪 Tax</span>' : ''}</div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold ${isIncome ? 'text-emerald-400' : 'text-rose-400'}">${isIncome ? '+' : '-'}€${Number(t.amount).toFixed(2)}</span>
+                                ${isEditable ? `<button onclick="openEditModal('${t.id}')" class="text-slate-400 hover:text-indigo-400 transition p-1"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>` : ''}
+                                <button onclick="deleteTransaction('${t.id}')" class="text-slate-500 hover:text-rose-400 transition p-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-rose-400">-€${Number(t.amount).toFixed(2)}</span>
-                            <button onclick="openEditModal('${t.id}')" class="text-slate-400 hover:text-indigo-400 transition p-1"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
-                            <button onclick="deleteTransaction('${t.id}')" class="text-slate-500 hover:text-rose-400 transition p-1"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                        </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             }
 
-            // Tax tab rendering with DELETE option
             const taxTxs = transactions.filter(t => t.is_tax_deductible);
             document.getElementById('tax-count').innerText = `${taxTxs.length} items`;
 
